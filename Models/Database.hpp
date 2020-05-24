@@ -10,7 +10,7 @@ public:
     ~Database();
 
 public:
-    class Person;
+    class User;
     class Hotel;
     class Comment;
 };

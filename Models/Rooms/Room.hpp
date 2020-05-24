@@ -14,14 +14,16 @@ public:
         Premium
     };
 
+public:
+    virtual ~Room();
+
 protected:
     Room(std::string id, enum Room_Class type, float price);
-    virtual ~Room();
     virtual std::string generate_id() = 0;
 private:
     Room_Class type;
     float price;
-    std::string id;
+    t_id id;
     bool booked;
 };
 

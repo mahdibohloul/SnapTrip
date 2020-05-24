@@ -12,6 +12,7 @@ namespace ConstNames
     const std::string Luxury_Room_Prefix = "l";
     const std::string Premium_Room_Prefix = "p";
     const int First_Room_Id = 1;
+    const int First_Reserve_Id = 1;
 }
 
 #endif

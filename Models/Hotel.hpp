@@ -6,6 +6,7 @@
 #include <vector>
 
 typedef std::vector<std::string> v_string;
+typedef std::string t_id;
 
 class Database::Hotel
 {
@@ -16,15 +17,19 @@ public:
         float latitude;
     };
     class Room;
+    class Rating;
     typedef std::vector<Room*> v_room;
+    typedef std::vector<Rating*> v_rating;
 
-private:
-    Hotel();
+public:
     ~Hotel();
 
 private:
+    Hotel();
+
+private:
     unsigned int hotel_star_rating;
-    std::string id;
+    t_id id;
     std::string property_name;
     std::string hotel_overview;
     v_string property_amenities;
