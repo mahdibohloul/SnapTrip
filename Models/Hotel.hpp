@@ -15,17 +15,23 @@ public:
     {
         float longitude;
         float latitude;
+        Coordinates(float x, float y) : longitude(x), latitude(y) {}
     };
     class Room;
     class Rating;
     typedef std::vector<Room*> v_room;
     typedef std::vector<Rating*> v_rating;
+    friend class Database;
 
 public:
     ~Hotel();
 
 private:
-    Hotel();
+    Hotel(const HotelInfo& info);
+    v_room prepare_rooms(const HotelInfo& info);
+
+    template<class room>
+    void construct_rooms(v_room& rooms, int quantity, float price);
 
 private:
     unsigned int hotel_star_rating;

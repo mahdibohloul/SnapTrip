@@ -16,6 +16,9 @@ public:
 
 public:
     virtual ~Room();
+    static void reset_room_id(v_room& rooms);
+    virtual void reset_id() = 0;
+    friend class Hotel;
 
 protected:
     Room(std::string id, enum Room_Class type, float price);

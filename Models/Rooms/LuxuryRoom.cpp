@@ -16,3 +16,5 @@ string LuxuryRoom::generate_id()
     current_id++;
     return os.str();
 }
+
+void LuxuryRoom::reset_id() {current_id = ConstNames::First_Room_Id;}

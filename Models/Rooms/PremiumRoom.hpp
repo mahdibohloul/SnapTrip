@@ -9,6 +9,7 @@ public:
     PremiumRoom(float price);
     ~PremiumRoom();
     std::string generate_id();
+    void reset_id();
 
 private:
     static int current_id;
