@@ -13,6 +13,11 @@ namespace ConstNames
     const std::string Premium_Room_Prefix = "p";
     const int First_Room_Id = 1;
     const int First_Reserve_Id = 1;
+    const int Minimum_of_Characters = 1;
+    const char Comma = ',';
+    const char Amenities_Sep = '|';
+    const int No_Room = 0;
+    const int File_Name_Position = 1;
 }
 
 #endif
