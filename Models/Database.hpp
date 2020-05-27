@@ -38,6 +38,19 @@ public:
                   num_t n_l_r, num_t n_p_r, price_t s_p, price_t d_p, price_t l_p, price_t p_p);
     };
 
+    struct UserInfo
+    {
+        info_t email;
+        info_t username;
+        long long password;
+        UserInfo(info_t i_email = "", info_t i_username = "", long long i_password = 0)
+        {
+            email = i_email;
+            username = i_username;
+            password = i_password;
+        }
+    };
+
 public:
     class User;
     class Hotel;
@@ -50,6 +63,12 @@ public:
     Database();
     ~Database();
     void hotel_setup(const HotelInfo& hotel_info);
+    void user_setup(const UserInfo& user_info);
+    User* query_in_users(UserInfo user_info);
+    User* query_in_users(UserInfo user_info, const l_users& users);
+
+private:
+    bool check_info(User* current_user, UserInfo user_info);
 
 
 private:

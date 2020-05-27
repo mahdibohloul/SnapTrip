@@ -32,6 +32,8 @@ public:
     static void release();
     ~ObjectRelational();
     void database_setup(Backend::data_t data);
+    bool authentication(Database::UserInfo user_info, const std::string mode, const Database::l_users& users = Database::l_users());
+    Database::User* get_specific_user(Database::UserInfo user_info, const std::string& mode);
 
 private:
     ObjectRelational();

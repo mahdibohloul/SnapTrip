@@ -1,5 +1,6 @@
 #include "UserInterface.hpp"
 #include "../ConstNames.hpp"
+#include "../Exception/Exception.hpp"
 #include <iostream>
 using namespace std;
 
@@ -21,7 +22,7 @@ void UserInterface::release()
 
 UserInterface::UserInterface()
 {
-    api = new API();
+    api = API::get_instance();
 }
 
 UserInterface::~UserInterface() {}
@@ -49,5 +50,22 @@ void UserInterface::dump_one_line(ifstream& file)
 {
     Content dump;
     getline(file, dump);
+}
+
+void UserInterface::process()
+{
+    string command;
+    while(getline(cin, command))
+    {
+        try
+        {
+            Backend::data_t command_data = api->parse_content(command, ConstNames::Space);
+            cout << api->command_processor(command_data) << endl;
+        }
+        catch(Exception ex)
+        {
+            cerr << ex.what() << endl;
+        }
+    }
 }
 

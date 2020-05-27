@@ -4,6 +4,8 @@
 #include "../Rooms/Room.hpp"
 #include <list>
 
+typedef int day_t;
+
 class ReserveCase
 {
 public:
@@ -21,6 +23,8 @@ private:
     Database::Hotel* hotel;
     v_rooms rooms;
     float cost;
+    day_t check_in;
+    day_t check_out;
 };
 
 #endif

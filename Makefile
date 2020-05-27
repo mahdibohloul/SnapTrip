@@ -6,6 +6,7 @@ USERINTERFACE_DIR = ./UserInterface
 BACKEND_DIR = ./Business-Logic
 DB_DIR = ./Models
 ORM_DIR = ./ORM
+EXCEPTION_DIR = ./Exception
 ROOMS_DIR = ${DB_DIR}/Rooms
 USER_DIR = ${DB_DIR}/User
 FILTER_DIR = ${DB_DIR}/Filters
@@ -13,13 +14,13 @@ FILTER_DIR = ${DB_DIR}/Filters
 
 all: utrip.out
 
-utrip.out: ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BUILD_DIR}/Room.o ${BUILD_DIR}/StandardRoom.o ${BUILD_DIR}/DeluxeRoom.o ${BUILD_DIR}/LuxuryRoom.o ${BUILD_DIR}/PremiumRoom.o ${BUILD_DIR}/ReserveCase.o ${BUILD_DIR}/User.o ${BUILD_DIR}/Filter.o ${BUILD_DIR}/CityFilter.o ${BUILD_DIR}/AvgPriceFilter.o ${BUILD_DIR}/AdvancedFilter.o ${BUILD_DIR}/Rating.o ${BUILD_DIR}/Comment.o ${BUILD_DIR}/API.o ${BUILD_DIR}/ObjectRelational.o ${BUILD_DIR}/UserInterface.o ${BUILD_DIR}/Backend.o | build_dir
-	${CC_EXEC} ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BUILD_DIR}/Room.o ${BUILD_DIR}/StandardRoom.o ${BUILD_DIR}/DeluxeRoom.o ${BUILD_DIR}/LuxuryRoom.o ${BUILD_DIR}/PremiumRoom.o ${BUILD_DIR}/ReserveCase.o ${BUILD_DIR}/User.o ${BUILD_DIR}/Filter.o ${BUILD_DIR}/CityFilter.o ${BUILD_DIR}/AvgPriceFilter.o ${BUILD_DIR}/AdvancedFilter.o ${BUILD_DIR}/Rating.o ${BUILD_DIR}/Comment.o ${BUILD_DIR}/API.o ${BUILD_DIR}/ObjectRelational.o ${BUILD_DIR}/UserInterface.o ${BUILD_DIR}/Backend.o -o utrip.out
+utrip.out: ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BUILD_DIR}/Room.o ${BUILD_DIR}/StandardRoom.o ${BUILD_DIR}/DeluxeRoom.o ${BUILD_DIR}/LuxuryRoom.o ${BUILD_DIR}/PremiumRoom.o ${BUILD_DIR}/ReserveCase.o ${BUILD_DIR}/User.o ${BUILD_DIR}/Filter.o ${BUILD_DIR}/CityFilter.o ${BUILD_DIR}/AvgPriceFilter.o ${BUILD_DIR}/AdvancedFilter.o ${BUILD_DIR}/Rating.o ${BUILD_DIR}/Comment.o ${BUILD_DIR}/API.o ${BUILD_DIR}/ObjectRelational.o ${BUILD_DIR}/UserInterface.o ${BUILD_DIR}/Backend.o ${BUILD_DIR}/Exception.o | build_dir
+	${CC_EXEC} ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BUILD_DIR}/Room.o ${BUILD_DIR}/StandardRoom.o ${BUILD_DIR}/DeluxeRoom.o ${BUILD_DIR}/LuxuryRoom.o ${BUILD_DIR}/PremiumRoom.o ${BUILD_DIR}/ReserveCase.o ${BUILD_DIR}/User.o ${BUILD_DIR}/Filter.o ${BUILD_DIR}/CityFilter.o ${BUILD_DIR}/AvgPriceFilter.o ${BUILD_DIR}/AdvancedFilter.o ${BUILD_DIR}/Rating.o ${BUILD_DIR}/Comment.o ${BUILD_DIR}/API.o ${BUILD_DIR}/ObjectRelational.o ${BUILD_DIR}/UserInterface.o ${BUILD_DIR}/Backend.o ${BUILD_DIR}/Exception.o -o utrip.out
 
 ${BUILD_DIR}/main.o: main.cpp ConstNames.hpp ${USERINTERFACE_DIR}/UserInterface.hpp | build_dir
 	${CC_EXEC} -c main.cpp -o ${BUILD_DIR}/main.o
 
-${BUILD_DIR}/Database.o: ${DB_DIR}/Database.cpp ${DB_DIR}/Database.hpp ${DB_DIR}/Hotel.hpp | build_dir
+${BUILD_DIR}/Database.o: ${DB_DIR}/Database.cpp ${DB_DIR}/Database.hpp ${DB_DIR}/Hotel.hpp ${USER_DIR}/User.hpp ConstNames.hpp | build_dir
 	${CC_EXEC} -c ${DB_DIR}/Database.cpp -o ${BUILD_DIR}/Database.o
 
 ${BUILD_DIR}/Hotel.o: ${DB_DIR}/Hotel.cpp ${DB_DIR}/Hotel.hpp ${DB_DIR}/Database.hpp ${ROOMS_DIR}/StandardRoom.hpp ${ROOMS_DIR}/DeluxeRoom.hpp ${ROOMS_DIR}/LuxuryRoom.hpp ${ROOMS_DIR}/PremiumRoom.hpp | build_dir
@@ -58,10 +59,8 @@ ${BUILD_DIR}/CityFilter.o: ${FILTER_DIR}/CityFilter.cpp ${FILTER_DIR}/CityFilter
 ${BUILD_DIR}/AvgPriceFilter.o: ${FILTER_DIR}/AvgPriceFilter.cpp ${FILTER_DIR}/AvgPriceFilter.hpp ${FILTER_DIR}/Filter.hpp | build_dir
 	${CC_EXEC} -c ${FILTER_DIR}/AvgPriceFilter.cpp -o ${BUILD_DIR}/AvgPriceFilter.o
 
-
 ${BUILD_DIR}/Rating.o: ${DB_DIR}/Rating.cpp ${DB_DIR}/Rating.hpp ${USER_DIR}/User.hpp | build_dir
 	${CC_EXEC} -c ${DB_DIR}/Rating.cpp -o ${BUILD_DIR}/Rating.o
-
 
 ${BUILD_DIR}/Comment.o: ${DB_DIR}/Comment.cpp ${DB_DIR}/Comment.cpp ${USER_DIR}/User.hpp | build_dir
 	${CC_EXEC} -c ${DB_DIR}/Comment.cpp -o ${BUILD_DIR}/Comment.o
@@ -77,6 +76,9 @@ ${BUILD_DIR}/UserInterface.o: ${USERINTERFACE_DIR}/UserInterface.cpp ${USERINTER
 
 ${BUILD_DIR}/Backend.o: ${BACKEND_DIR}/Backend.cpp ${BACKEND_DIR}/Backend.hpp ${ORM_DIR}/ObjectRelational.hpp | build_dir
 	${CC_EXEC} -c ${BACKEND_DIR}/Backend.cpp -o ${BUILD_DIR}/Backend.o
+
+${BUILD_DIR}/Exception.o: ${EXCEPTION_DIR}/Exception.cpp ${EXCEPTION_DIR}/Exception.hpp | build_dir
+	${CC_EXEC} -c ${EXCEPTION_DIR}/Exception.cpp -o ${BUILD_DIR}/Exception.o
 
 build_dir:
 	mkdir -p ${BUILD_DIR}

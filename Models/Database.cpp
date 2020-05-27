@@ -1,5 +1,7 @@
 #include "Database.hpp"
 #include "Hotel.hpp"
+#include "../ConstNames.hpp"
+#include "./User/User.hpp"
 #include <iostream>
 using namespace std;
 
@@ -39,4 +41,43 @@ void Database::hotel_setup(const HotelInfo& hotel_info)
 {
     Hotel* hotel = new Hotel(hotel_info);
     hotels.push_back(hotel);
+}
+
+void Database::user_setup(const UserInfo &user_info)
+{
+    User* user = new User(user_info);
+    users.push_back(user);
+}
+
+Database::User* Database::query_in_users(UserInfo user_info)
+{
+    if(!users.empty())
+    {
+        for(auto user_itr = users.begin(); user_itr != users.end(); user_itr++)
+        {
+            if(check_info(*user_itr, user_info) == ConstNames::Equal)
+                return *user_itr;
+        }
+    }
+    return nullptr;
+}
+
+Database::User* Database::query_in_users(UserInfo user_info, const l_users& users)
+{
+    if(!users.empty())
+    {
+        for(auto user_itr = users.begin(); user_itr != users.end(); user_itr++)
+        {
+            if(check_info(*user_itr, user_info) == ConstNames::Equal)
+                return *user_itr;
+        }
+    }
+    return nullptr;
+}
+
+bool Database::check_info(User* current_user, UserInfo user_info)
+{
+    if(current_user->email == user_info.email || current_user->username == user_info.username)
+        return ConstNames::Equal;
+    return !ConstNames::Equal;
 }

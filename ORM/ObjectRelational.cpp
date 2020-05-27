@@ -1,5 +1,6 @@
 #include "ObjectRelational.hpp"
 #include "../ConstNames.hpp"
+using namespace std;
 
 ObjectRelational* ObjectRelational::instance = nullptr;
 
@@ -50,3 +51,21 @@ void ObjectRelational::database_setup(Backend::data_t data)
     database->hotel_setup(hotel_info);
 }
 
+Database::User* ObjectRelational::get_specific_user(Database::UserInfo user_info, const string& mode)
+{
+    if(mode == ConstNames::Signup_Order)
+        database->user_setup(user_info);
+    return database->query_in_users(user_info);
+}
+
+bool ObjectRelational::authentication(Database::UserInfo user_info, const string mode, const Database::l_users& users)
+{
+    Database::User* user = nullptr;
+    if(mode == ConstNames::Signup_Order || mode == ConstNames::User_Authentication)
+        user = database->query_in_users(user_info);
+    else if(mode == ConstNames::Online_User_Check)
+        user = database->query_in_users(user_info, users);
+    if(user != nullptr)
+        return ConstNames::Exist;
+    return !ConstNames::Exist;
+}

@@ -16,6 +16,7 @@ public:
     static UserInterface* get_instance();
     static void release();
     void database_setup(Content file_name);
+    void process();
 
 private:
     UserInterface();
@@ -24,6 +25,7 @@ private:
 private:
     static UserInterface* instance;
     API* api;
+
 
 };
 
