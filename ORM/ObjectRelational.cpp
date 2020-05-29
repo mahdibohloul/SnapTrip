@@ -32,7 +32,7 @@ ObjectRelational::~ObjectRelational()
 
 void ObjectRelational::database_setup(Backend::data_t data)
 {
-    Backend::data_t property_amenities = backend->parse_content(data[e_property_amenities], ConstNames::Amenities_Sep);
+    info_t property_amenities = data[e_property_amenities];
     coordinate_t latitude = stof(data[e_latitude]);
     coordinate_t longitude = stof(data[e_longitude]);
     num_t no_standard_rooms = stoi(data[e_no_s_rooms]);
@@ -68,4 +68,24 @@ bool ObjectRelational::authentication(Database::UserInfo user_info, const string
     if(user != nullptr)
         return ConstNames::Exist;
     return !ConstNames::Exist;
+}
+
+void ObjectRelational::deposit_in(const Database::UserInfo& user_info, Database::User* user)
+{
+    database->increase_user_amount(user_info, user);
+}
+
+Content ObjectRelational::print_account_information(const Database::UserInfo& user_info, Database::User* user)
+{
+    return database->print_account_information(user_info, user);
+}
+
+Content ObjectRelational::get_hotels(Database::User *user)
+{
+    return database->get_hotels(user);
+}
+
+Content ObjectRelational::get_hotels(info_t hotel_id)
+{
+    return database->get_hotels(hotel_id);
 }

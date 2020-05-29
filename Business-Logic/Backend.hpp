@@ -20,6 +20,8 @@ public:
     typedef std::vector<std::string> data_t;
     typedef Content (Backend::*request_method) (data_t);
     typedef std::map<request_t, request_method> map_request;
+    typedef std::map<request_t, request_method> m_post_request;
+    typedef std::map<request_t, request_method> m_get_request;
     enum CommandOrder
     {
         Method_Type,
@@ -32,13 +34,6 @@ public:
         GET,
         DELETE
     };
-    enum POSTMethod
-    {
-        Signup,
-        Login,
-        Logout
-    };
-    typedef std::map<std::string, POSTMethod> map_post_method;
 
 public:
     ~Backend();
@@ -54,8 +49,13 @@ private:
     Content signup(data_t data);
     Content login(data_t data);
     Content logout(data_t data);
+    Content wallet_post(data_t data);
+    Content wallet_get(data_t data);
+    Content get_full_hotel(data_t data);
+    Content get_hotels();
     bool in_the_command(const std::string& command, enum RequestType type);
     bool in_the_post_command(const std::string& command);
+    bool in_the_get_command(const std::string& command);
     Database::UserInfo fill_user_info(const data_t& data, const std::string mode);
 
     template<typename iterator>
@@ -67,17 +67,21 @@ private:
     hash_t hash_password(T raw_password);
 
     Content find_info(const std::string& mode, const data_t& data);
-    bool has_permission_to_signup(Database::UserInfo user_info);
-    bool has_permission_to_login(Database::UserInfo user_info);
-    bool request_from_online_user(Database::UserInfo user_info);
+    bool has_permission_to_signup(const Database::UserInfo& user_info);
+    bool has_permission_to_login(const Database::UserInfo& user_info);
+    bool has_permission_to_deposit(const Database::UserInfo& user_info);
+    Content check_account(const Database::UserInfo& user_info);
+    Content get_hotels_info();
+    Content get_hotels_info(info_t hotel_id);
+    bool request_from_online_user(Database::UserInfo user_info = Database::UserInfo());
 
 private:
     static Backend* instance;
     ObjectRelational* object_relational;
     Database::l_users online_users;
     map_request func_method_map;
-    map_post_method post_method;
-
+    m_post_request func_post_map;
+    m_get_request func_get_map;
 };
 
 #endif
