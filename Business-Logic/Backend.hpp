@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "../Models/Database.hpp"
+#include "../Models/User/User.hpp"
 
 #define IN true
 
@@ -20,14 +20,6 @@ public:
     typedef std::vector<std::string> data_t;
     typedef Content (Backend::*request_method) (data_t);
     typedef std::map<request_t, request_method> map_request;
-    typedef std::map<request_t, request_method> m_post_request;
-    typedef std::map<request_t, request_method> m_get_request;
-    enum CommandOrder
-    {
-        Method_Type,
-        Command_Type,
-        Question_Mark
-    };
     enum RequestType
     {
         POST,
@@ -46,18 +38,23 @@ private:
     Backend();
     Content post_request(data_t data);
     Content get_request(data_t data);
+    Content delete_request(data_t data);
     Content signup(data_t data);
     Content login(data_t data);
     Content logout(data_t data);
     Content wallet_post(data_t data);
+    Content post_filter(data_t data);
     Content wallet_get(data_t data);
     Content get_full_hotel(data_t data);
     Content get_hotels();
+    Content delete_filter(data_t data);
     bool in_the_command(const std::string& command, enum RequestType type);
     bool in_the_post_command(const std::string& command);
     bool in_the_get_command(const std::string& command);
+    bool in_the_delete_command(const std::string& command);
     Database::UserInfo fill_user_info(const data_t& data, const std::string mode);
-
+    Database::User::FilterInfo fill_filter_info(const data_t& data);
+    void set_filters(const Database::User::FilterInfo& filter_info);
     template<typename iterator>
     bool info_exist(iterator it, iterator next, iterator end);
 
@@ -74,14 +71,18 @@ private:
     Content get_hotels_info();
     Content get_hotels_info(info_t hotel_id);
     bool request_from_online_user(Database::UserInfo user_info = Database::UserInfo());
+    bool hotel_stars_in_range(std::string min_star, std::string max_star);
+    bool valid_price_range(std::string min_price, std::string max_price);
+    bool valid_advanced_filter(std::string quantity, std::string check_in, std::string check_out);
 
 private:
     static Backend* instance;
     ObjectRelational* object_relational;
     Database::l_users online_users;
     map_request func_method_map;
-    m_post_request func_post_map;
-    m_get_request func_get_map;
+    map_request func_post_map;
+    map_request func_get_map;
+    map_request func_delete_map;
 };
 
 #endif

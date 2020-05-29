@@ -62,9 +62,9 @@ void UserInterface::process()
             Backend::data_t command_data = api->parse_content(command, ConstNames::Space);
             cout << api->command_processor(command_data) << endl;
         }
-        catch(Exception ex)
+        catch(const exception& ex)
         {
-            cerr << ex.what() << endl;
+            cout << ex.what() << endl;
         }
     }
 }

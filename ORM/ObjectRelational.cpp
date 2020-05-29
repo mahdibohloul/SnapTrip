@@ -89,3 +89,13 @@ Content ObjectRelational::get_hotels(info_t hotel_id)
 {
     return database->get_hotels(hotel_id);
 }
+
+void ObjectRelational::set_filter(const Database::User::FilterInfo &filter_info, Database::User *user)
+{
+    user->set_filters(filter_info);
+}
+
+void ObjectRelational::delete_filter(Database::User *user)
+{
+    user->delete_filter();
+}

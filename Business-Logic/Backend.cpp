@@ -30,12 +30,15 @@ Backend::Backend()
     online_users = Database::l_users();
     func_method_map.insert(make_pair(ConstNames::POST_METHOD, &Backend::post_request));
     func_method_map.insert(make_pair(ConstNames::GET_METHOD, &Backend::get_request));
+    func_method_map.insert(make_pair(ConstNames::DELETE_METHOD, &Backend::delete_request));
     func_post_map.insert(make_pair(ConstNames::Signup_Order, &Backend::signup));
     func_post_map.insert(make_pair(ConstNames::Login_Order, &Backend::login));
     func_post_map.insert(make_pair(ConstNames::Logout_Order, &Backend::logout));
     func_post_map.insert(make_pair(ConstNames::Wallet_Order, &Backend::wallet_post));
+    func_post_map.insert(make_pair(ConstNames::Filter_Order, &Backend::post_filter));
     func_get_map.insert(make_pair(ConstNames::Wallet_Order, &Backend::wallet_get));
     func_get_map.insert(make_pair(ConstNames::Get_Hotels_Order, &Backend::get_full_hotel));
+    func_delete_map.insert(make_pair(ConstNames::Filter_Order, &Backend::delete_filter));
 }
 
 Backend::~Backend() {}
@@ -60,15 +63,14 @@ Content Backend::command_processor(data_t command_data)
     {
         object_relational = ObjectRelational::get_instance();
         auto command_itr = command_data.begin();
-        if(*command_itr != ConstNames::POST_METHOD && *command_itr != ConstNames::GET_METHOD)
+        if(*command_itr != ConstNames::POST_METHOD && *command_itr != ConstNames::GET_METHOD && *command_itr != ConstNames::DELETE_METHOD)
             throw Exception(ConstNames::Bad_Request_msg);
         request_method method = func_method_map[*command_itr];
         command_data.erase(command_itr);
         return (this->*method)(command_data);
     }
-    else{
+    else
         throw Exception(ConstNames::Bad_Request_msg);
-    }
 }
 
 Content Backend::post_request(data_t data)
@@ -94,6 +96,21 @@ Content Backend::get_request(data_t data)
         if(in_the_command(*command_itr, GET) != IN)
             throw Exception(ConstNames::Not_Found_msg);
         request_method method = func_get_map[*command_itr];
+        data.erase(command_itr);
+        return (this->*method)(data);
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Content Backend::delete_request(data_t data)
+{
+    if(!data.empty())
+    {
+        auto command_itr = data.begin();
+        if(in_the_command(*command_itr, DELETE) != IN)
+            throw Exception(ConstNames::Not_Found_msg);
+        request_method method = func_delete_map[*command_itr];
         data.erase(command_itr);
         return (this->*method)(data);
     }
@@ -204,6 +221,42 @@ Content Backend::get_hotels()
     return get_hotels_info();
 }
 
+Content Backend::post_filter(data_t data)
+{
+    if(!data.empty())
+    {
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        auto command_itr = data.begin();
+        if(*command_itr != ConstNames::Question_Mark)
+            throw Exception(ConstNames::Bad_Request_msg);
+        data.erase(command_itr);
+        Database::User::FilterInfo filter_info = fill_filter_info(data);
+        set_filters(filter_info);
+        return ConstNames::OK_msg;
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Content Backend::delete_filter(data_t data)
+{
+    if(data.empty())
+    {
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        object_relational->delete_filter(*online_users.begin());
+        return ConstNames::OK_msg;
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
+}
+
+void Backend::set_filters(const Database::User::FilterInfo& filter_info)
+{
+    object_relational->set_filter(filter_info, *online_users.begin());
+}
+
 bool Backend::has_permission_to_signup(const Database::UserInfo& user_info)
 {
     if(request_from_online_user(user_info) == ConstNames::Exist)
@@ -269,12 +322,15 @@ Database::UserInfo Backend::fill_user_info(const data_t& data, string mode)
     Database::UserInfo user_info = Database::UserInfo();
     if(mode == ConstNames::Signup_Order || mode == ConstNames::Login_Order)
     {
-        user_info.email = find_info(ConstNames::Email, data);
-        user_info.password = hash_password(find_info(ConstNames::Password, data));
+        string email = (find_info(ConstNames::Email, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Email, data) : throw Exception(ConstNames::Bad_Request_msg);
+        user_info.email = email;
+        string password = (find_info(ConstNames::Password, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Password, data) : throw Exception(ConstNames::Bad_Request_msg);
+        user_info.password = hash_password(password);
         if(!check_email_validity(user_info.email))
             throw Exception(ConstNames::Bad_Request_msg);
         if(mode == ConstNames::Signup_Order){
-            user_info.username = find_info(ConstNames::Username, data);
+            string username = (find_info(ConstNames::Username, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Username, data) : throw Exception(ConstNames::Bad_Request_msg);
+            user_info.username = username;
             return user_info;
         }
         user_info.username = ConstNames::Empty_Str;
@@ -282,21 +338,99 @@ Database::UserInfo Backend::fill_user_info(const data_t& data, string mode)
     }
     else if(mode == ConstNames::POST_Wallet_Order)
     {
-        user_info.amount = stof(find_info(ConstNames::Amount, data));
+        string amount = (find_info(ConstNames::Amount, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Amount, data) : throw Exception(ConstNames::Bad_Request_msg);
+        user_info.amount = stof(amount);
         return user_info;
     }
     else if(mode == ConstNames::GET_Wallet_Order)
     {
-        user_info.no_transactions = stoi(find_info(ConstNames::Count, data));
+        string count = (find_info(ConstNames::Count, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Count, data) : throw Exception(ConstNames::Bad_Request_msg);
+        user_info.no_transactions = stoi(count);
     }
     return user_info;
+}
+
+Database::User::FilterInfo Backend::fill_filter_info(const data_t& data)
+{
+    Database::User::FilterInfo filter_info = Database::User::FilterInfo();
+    filter_info.city = find_info(ConstNames::City, data);
+    filter_info.mode = Database::User::FilterMode::City;
+    string min_star = find_info(ConstNames::Min_Star, data);
+    string max_star = find_info(ConstNames::Max_Star, data);
+    if(hotel_stars_in_range(min_star, max_star))
+    {
+        filter_info.min_star = stoi(min_star);
+        filter_info.max_star = stoi(max_star);
+        filter_info.mode = Database::User::FilterMode::StarRange;
+    }
+    string min_price = find_info(ConstNames::Min_Price, data);
+    string max_price = find_info(ConstNames::Max_Price, data);
+    if(valid_price_range(min_price, max_price))
+    {
+        filter_info.min_price = stof(min_price);
+        filter_info.max_price = stof(max_price);
+        filter_info.mode = Database::User::FilterMode::AvgPrice;
+    }
+    string type = find_info(ConstNames::Type, data);
+    if(type != ConstNames::Empty_Str)
+        filter_info.type = filter_info.m_room_type[type];
+    string quantity = find_info(ConstNames::Quantity, data);
+    string check_in = find_info(ConstNames::Check_In, data);
+    string check_out = find_info(ConstNames::Check_Out, data);
+    if(valid_advanced_filter(quantity, check_in, check_out))
+    {
+        filter_info.quantity = stoi(quantity);
+        filter_info.check_in = stoi(check_in);
+        filter_info.check_out = stoi(check_out);
+        filter_info.mode = Database::User::FilterMode::Advanced;
+    }
+    return filter_info;
+}
+
+bool Backend::hotel_stars_in_range(string min_star, string max_star)
+{
+    if(min_star != ConstNames::Empty_Str && max_star != ConstNames::Empty_Str)
+    {
+        int min = stoi(min_star), max = stoi(max_star);
+        if(min >= ConstNames::Minimum_Hotel_Star && max >= min && max <= ConstNames::Maximum_Hotel_Star)
+            return true;
+        else
+            throw Exception(ConstNames::Bad_Request_msg);
+    }
+    return false;
+}
+
+bool Backend::valid_price_range(string min_price, string max_price)
+{
+    if(min_price != ConstNames::Empty_Str && max_price != ConstNames::Empty_Str)
+    {
+        int min = stof(min_price), max = stof(max_price);
+        if(max >= min && min >= 0 && max >= 0)
+            return true;
+        else
+            throw Exception(ConstNames::Bad_Request_msg);
+    }
+    return false;
+}
+
+bool Backend::valid_advanced_filter(string quantity, string check_in, string check_out)
+{
+    if(quantity != ConstNames::Empty_Str && check_in != ConstNames::Empty_Str && check_out != ConstNames::Empty_Str)
+    {
+        int q = stoi(quantity), in = stoi(check_in), out = stoi(check_in);
+        if(q >= ConstNames::No_Room && in >= ConstNames::Minimum_Hotel_Reserve && in <= out && out <= ConstNames::Maximum_Hotel_Reserve)
+            return true;
+        else
+            throw Exception(ConstNames::Bad_Request_msg);
+    }
+    return false;
 }
 
 Content Backend::find_info(const string& mode, const data_t& data)
 {
     auto iterator = find(data.begin(), data.end(), mode);
     if(info_exist(iterator, iterator + 1, data.end()) != ConstNames::Exist)
-        throw Exception(ConstNames::Bad_Request_msg);
+        return ConstNames::Empty_Str;
     iterator++;
     return (*iterator);
 }
@@ -306,6 +440,8 @@ bool Backend::in_the_command(const std::string& command, enum RequestType type)
     if(type == POST && in_the_post_command(command) == IN)
         return IN;
     else if(type == GET && in_the_get_command(command) == IN)
+        return IN;
+    else if(type == DELETE && in_the_delete_command(command) == IN)
         return IN;
     return !IN;
 }
@@ -322,6 +458,14 @@ bool Backend::in_the_get_command(const std::string& command)
 {
     auto command_itr = func_get_map.find(command);
     if(command_itr == func_get_map.end())
+        return !IN;
+    return IN;
+}
+
+bool Backend::in_the_delete_command(const std::string& command)
+{
+    auto command_itr = func_delete_map.find(command);
+    if(command_itr == func_delete_map.end())
         return !IN;
     return IN;
 }

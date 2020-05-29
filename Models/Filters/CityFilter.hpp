@@ -6,8 +6,13 @@
 class CityFilter : public Database::User::Filter
 {
 public:
-    CityFilter();
+    CityFilter(const Database::User::FilterInfo&);
     ~CityFilter();
+    void filter(Database::l_hotels&);
+    std::string get_city() { return city; }
+
+private:
+    std::string city;
 
 };
 #endif

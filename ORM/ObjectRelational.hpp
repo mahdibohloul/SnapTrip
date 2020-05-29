@@ -33,6 +33,8 @@ public:
     ~ObjectRelational();
     void database_setup(Backend::data_t data);
     void deposit_in(const Database::UserInfo& user_info, Database::User* user);
+    void set_filter(const Database::User::FilterInfo& filter_info, Database::User* user);
+    void delete_filter(Database::User* user);
     bool authentication(Database::UserInfo user_info, const std::string mode, const Database::l_users& users = Database::l_users());
     Database::User* get_specific_user(Database::UserInfo user_info, const std::string& mode);
     Content print_account_information(const Database::UserInfo& user_info, Database::User* user);

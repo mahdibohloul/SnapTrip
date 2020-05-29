@@ -62,18 +62,18 @@ info_t Database::Hotel::get_full_info()
     os << id << endl;
     os << property_name << endl;
     os << setprecision(ConstNames::Precision) << fixed;
-    os << Star << ConstNames::Colon << ConstNames::Space << hotel_star_rating << endl;
-    os << Overview << ConstNames::Colon << ConstNames::Space << hotel_overview << endl;
-    os << Amenities << ConstNames::Colon << ConstNames::Space << property_amenities << endl;
-    os << City << ConstNames::Colon << ConstNames::Space << city << endl;
-    os << Latitude << ConstNames::Colon << ConstNames::Space << geo_coordinates.latitude << endl;
-    os << Longitude << ConstNames::Colon << ConstNames::Space << geo_coordinates.longitude << endl;
+    os << ConstNames::Star << ConstNames::Colon << ConstNames::Space << hotel_star_rating << endl;
+    os << ConstNames::Overview << ConstNames::Colon << ConstNames::Space << hotel_overview << endl;
+    os << ConstNames::Amenities << ConstNames::Colon << ConstNames::Space << property_amenities << endl;
+    os << ConstNames::City << ConstNames::Colon << ConstNames::Space << city << endl;
+    os << ConstNames::Latitude << ConstNames::Colon << ConstNames::Space << geo_coordinates.latitude << endl;
+    os << ConstNames::Longitude << ConstNames::Colon << ConstNames::Space << geo_coordinates.longitude << endl;
     os << ConstNames::Hashtag << ConstNames::Room << ConstNames::Colon << ConstNames::Space << get_num_of_rooms() << endl;
-    os << Price << ConstNames::Colon << ConstNames::Space << get_rooms_price();
+    os << ConstNames::Price << ConstNames::Colon << ConstNames::Space << get_rooms_price();
     return os.str();
 }
 
-float Database::Hotel::get_avg_price()
+float Database::Hotel::get_avg_price() const
 {
     map<Room::Room_Class, float> map_of_price;
     for(auto room_itr = rooms.begin(); room_itr != rooms.end(); room_itr++)
@@ -123,4 +123,31 @@ info_t Database::Hotel::get_num_of_rooms()
     ostringstream os;
     os << map_of_rooms[Room::Room_Class::Standard] << ConstNames::Space << map_of_rooms[Room::Room_Class::Deluxe] << ConstNames::Space << map_of_rooms[Room::Room_Class::Luxury] << ConstNames::Space << map_of_rooms[Room::Room_Class::Premium];
     return os.str();
+}
+
+info_t Database::Hotel::get_city() const { return city; }
+
+int Database::Hotel::get_star() const { return hotel_star_rating; }
+
+bool Database::Hotel::have_room_with_this_specifications(int type, int quantity, int check_in, int check_out) const
+{
+    int q = 0;
+    for(auto room_itr = rooms.begin(); room_itr != rooms.end(); room_itr++)
+    {
+        if(in_range(*room_itr, check_in, check_out, type))
+            q++;
+    }
+    if(q >= quantity)
+        return true;
+    return false;
+}
+
+bool Database::Hotel::in_range(Room* room, int check_in, int check_out, int type) const
+{
+    if(room->type == type)
+    {
+        if(room->can_reserve(check_in, check_out))
+            return true;
+    }
+    return false;
 }

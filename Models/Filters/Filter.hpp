@@ -6,15 +6,16 @@
 class Database::User::Filter
 {
 public:
-    typedef std::list<Database::Hotel*> v_hotels;
-public:
     virtual ~Filter();
+    virtual void filter(Database::l_hotels&) = 0;
+    virtual Database::l_hotels get_hotels();
+    virtual void reset_filter();
 
-private:
+protected:
     Filter();
 
-private:
-    v_hotels hotels;
+protected:
+    Database::l_hotels hotels;
 };
 
 #endif

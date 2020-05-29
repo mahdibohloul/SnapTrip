@@ -9,14 +9,6 @@
 typedef std::vector<std::string> v_string;
 typedef std::string t_id;
 
-const std::string Star = "star";
-const std::string Overview = "overview";
-const std::string Amenities = "amenities";
-const std::string City = "city";
-const std::string Latitude = "latitude";
-const std::string Longitude = "longitude";
-const std::string Price = "price";
-
 
 class Database::Hotel
 {
@@ -36,13 +28,16 @@ public:
 public:
     ~Hotel();
     info_t to_string();
-    float get_avg_price();
+    float get_avg_price() const;
     info_t get_full_info();
+    info_t get_city() const;
+    int get_star() const;
+    bool have_room_with_this_specifications(int type, int quantity, int check_in, int check_out) const;
 
 private:
     Hotel(const HotelInfo& info);
     v_room prepare_rooms(const HotelInfo& info);
-
+    bool in_range(Room* room, int check_in, int check_out, int type) const;
     template<class room>
     void construct_rooms(v_room& rooms, int quantity, float price);
 
