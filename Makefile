@@ -20,7 +20,7 @@ utrip.out: ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BU
 ${BUILD_DIR}/main.o: main.cpp ConstNames.hpp ${USERINTERFACE_DIR}/UserInterface.hpp | build_dir
 	${CC_EXEC} -c main.cpp -o ${BUILD_DIR}/main.o
 
-${BUILD_DIR}/Database.o: ${DB_DIR}/Database.cpp ${DB_DIR}/Database.hpp ${DB_DIR}/Hotel.hpp ${USER_DIR}/User.hpp ConstNames.hpp | build_dir
+${BUILD_DIR}/Database.o: ${DB_DIR}/Database.cpp ${DB_DIR}/Database.hpp ${DB_DIR}/Hotel.hpp ${USER_DIR}/User.hpp ConstNames.hpp ${EXCEPTION_DIR}/Exception.hpp | build_dir
 	${CC_EXEC} -c ${DB_DIR}/Database.cpp -o ${BUILD_DIR}/Database.o
 
 ${BUILD_DIR}/Hotel.o: ${DB_DIR}/Hotel.cpp ${DB_DIR}/Hotel.hpp ${DB_DIR}/Database.hpp ${ROOMS_DIR}/StandardRoom.hpp ${ROOMS_DIR}/DeluxeRoom.hpp ${ROOMS_DIR}/LuxuryRoom.hpp ${ROOMS_DIR}/PremiumRoom.hpp | build_dir
