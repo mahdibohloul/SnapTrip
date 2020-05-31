@@ -28,17 +28,7 @@ Backend::Backend()
 {
     object_relational = nullptr;
     online_users = Database::l_users();
-    func_method_map.insert(make_pair(ConstNames::POST_METHOD, &Backend::post_request));
-    func_method_map.insert(make_pair(ConstNames::GET_METHOD, &Backend::get_request));
-    func_method_map.insert(make_pair(ConstNames::DELETE_METHOD, &Backend::delete_request));
-    func_post_map.insert(make_pair(ConstNames::Signup_Order, &Backend::signup));
-    func_post_map.insert(make_pair(ConstNames::Login_Order, &Backend::login));
-    func_post_map.insert(make_pair(ConstNames::Logout_Order, &Backend::logout));
-    func_post_map.insert(make_pair(ConstNames::Wallet_Order, &Backend::wallet_post));
-    func_post_map.insert(make_pair(ConstNames::Filter_Order, &Backend::post_filter));
-    func_get_map.insert(make_pair(ConstNames::Wallet_Order, &Backend::wallet_get));
-    func_get_map.insert(make_pair(ConstNames::Get_Hotels_Order, &Backend::get_full_hotel));
-    func_delete_map.insert(make_pair(ConstNames::Filter_Order, &Backend::delete_filter));
+    construct_maps();
 }
 
 Backend::~Backend() {}
@@ -69,8 +59,7 @@ Content Backend::command_processor(data_t command_data)
         command_data.erase(command_itr);
         return (this->*method)(command_data);
     }
-    else
-        throw Exception(ConstNames::Bad_Request_msg);
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::post_request(data_t data)
@@ -84,8 +73,7 @@ Content Backend::post_request(data_t data)
         data.erase(command_itr);
         return (this->*method)(data);
     }
-    else
-        throw Exception(ConstNames::Bad_Request_msg);
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::get_request(data_t data)
@@ -99,8 +87,7 @@ Content Backend::get_request(data_t data)
         data.erase(command_itr);
         return (this->*method)(data);
     }
-    else
-        throw Exception(ConstNames::Bad_Request_msg);
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::delete_request(data_t data)
@@ -114,8 +101,7 @@ Content Backend::delete_request(data_t data)
         data.erase(command_itr);
         return (this->*method)(data);
     }
-    else
-        throw Exception(ConstNames::Bad_Request_msg);
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::signup(data_t data)
@@ -130,8 +116,7 @@ Content Backend::signup(data_t data)
         if(has_permission_to_signup(user_info) == ConstNames::Permissible)
             return ConstNames::OK_msg;
     }
-    else
-        throw Exception(ConstNames::Bad_Request_msg);
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::login(data_t data)
@@ -146,8 +131,7 @@ Content Backend::login(data_t data)
         if(has_permission_to_login(user_info) == ConstNames::Permissible)
             return ConstNames::OK_msg;
     }
-    else
-        throw Exception(ConstNames::Bad_Request_msg);
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::logout(data_t data)
@@ -156,14 +140,14 @@ Content Backend::logout(data_t data)
     {
         if(!online_users.empty())
         {
+            object_relational->logout_user(*online_users.begin());
             online_users.clear();
             return ConstNames::OK_msg;
         }
         else
             throw Exception(ConstNames::Permission_Denied_msg);
     }
-    else
-        throw Exception(ConstNames::Bad_Request_msg);
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::wallet_post(data_t data)
@@ -177,6 +161,74 @@ Content Backend::wallet_post(data_t data)
         Database::UserInfo user_info = fill_user_info(data, ConstNames::POST_Wallet_Order);
         if(has_permission_to_deposit(user_info) == ConstNames::Permissible)
             return ConstNames::OK_msg;
+    }
+    throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Content Backend::post_reserve(data_t data)
+{
+    if(!data.empty())
+    {
+        auto command_itr = data.begin();
+        if(*command_itr != ConstNames::Question_Mark)
+            throw Exception(ConstNames::Bad_Request_msg);
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        data.erase(command_itr);
+        Database::User::ReserveInfo reserve_info = fill_reserve_info(data);
+        return booked_out(reserve_info);
+    }
+    throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Content Backend::post_comment(data_t data)
+{
+    if(!data.empty())
+    {
+        auto command_itr = data.begin();
+        if(*command_itr != ConstNames::Question_Mark)
+            throw Exception(ConstNames::Bad_Request_msg);
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        data.erase(command_itr);
+        string hotel_id = find_info(ConstNames::Hotel, data);
+        string comment = find_info(ConstNames::Comment, data);
+        object_relational->post_comment(*online_users.begin(), hotel_id, comment);
+        return ConstNames::OK_msg;
+    }
+    throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Content Backend::post_rating(data_t data)
+{
+    if(!data.empty())
+    {
+        auto command_itr = data.begin();
+        if(*command_itr != ConstNames::Question_Mark)
+            throw Exception(ConstNames::Bad_Request_msg);
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        data.erase(command_itr);
+        auto rating_info = fill_rating_info(data);
+        object_relational->post_rating(rating_info);
+        return ConstNames::OK_msg;
+    }
+    throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Content Backend::post_filter(data_t data)
+{
+    if(!data.empty())
+    {
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        auto command_itr = data.begin();
+        if(*command_itr != ConstNames::Question_Mark)
+            throw Exception(ConstNames::Bad_Request_msg);
+        data.erase(command_itr);
+        Database::User::FilterInfo filter_info = fill_filter_info(data);
+        set_filters(filter_info);
+        return ConstNames::OK_msg;
     }
     else
         throw Exception(ConstNames::Bad_Request_msg);
@@ -195,6 +247,17 @@ Content Backend::wallet_get(data_t data)
     }
     else
         throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Content Backend::get_reserve(data_t data)
+{
+    if(data.empty())
+    {
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        return object_relational->get_reserve(*online_users.begin());
+    }
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::get_full_hotel(data_t data)
@@ -221,22 +284,37 @@ Content Backend::get_hotels()
     return get_hotels_info();
 }
 
-Content Backend::post_filter(data_t data)
+Content Backend::get_comment(data_t data)
 {
-    if(!data.empty())
-    {
-        if(request_from_online_user() != ConstNames::Exist)
-            throw Exception(ConstNames::Permission_Denied_msg);
+   if(!data.empty())
+   {
         auto command_itr = data.begin();
         if(*command_itr != ConstNames::Question_Mark)
             throw Exception(ConstNames::Bad_Request_msg);
         data.erase(command_itr);
-        Database::User::FilterInfo filter_info = fill_filter_info(data);
-        set_filters(filter_info);
-        return ConstNames::OK_msg;
-    }
-    else
-        throw Exception(ConstNames::Bad_Request_msg);
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        string hotel_id = find_info(ConstNames::Hotel, data);
+        return object_relational->get_comment(hotel_id);
+   }
+   throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Content Backend::get_rating(data_t data)
+{
+  if(!data.empty())
+  {
+        auto command_itr = data.begin();
+        if(*command_itr != ConstNames::Question_Mark)
+            throw Exception(ConstNames::Bad_Request_msg);
+        data.erase(command_itr);
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        string hotel_id = find_info(ConstNames::Hotel, data);
+        return object_relational->get_rating(hotel_id);
+  }
+  else
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 Content Backend::delete_filter(data_t data)
@@ -252,9 +330,19 @@ Content Backend::delete_filter(data_t data)
         throw Exception(ConstNames::Bad_Request_msg);
 }
 
-void Backend::set_filters(const Database::User::FilterInfo& filter_info)
+Content Backend::delete_reserve(data_t data)
 {
-    object_relational->set_filter(filter_info, *online_users.begin());
+    if(!data.empty())
+    {
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        string str_id = find_info(ConstNames::ID, data);
+        if(str_id == ConstNames::Empty_Str)
+            throw Exception(ConstNames::Bad_Request_msg);
+        int id = stoi(str_id);
+        return object_relational->delete_reserve(*online_users.begin(), id);
+    }
+    throw Exception(ConstNames::Bad_Request_msg);
 }
 
 bool Backend::has_permission_to_signup(const Database::UserInfo& user_info)
@@ -325,7 +413,7 @@ Database::UserInfo Backend::fill_user_info(const data_t& data, string mode)
         string email = (find_info(ConstNames::Email, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Email, data) : throw Exception(ConstNames::Bad_Request_msg);
         user_info.email = email;
         string password = (find_info(ConstNames::Password, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Password, data) : throw Exception(ConstNames::Bad_Request_msg);
-        user_info.password = hash_password(password);
+        user_info.password = hashing(password);
         if(!check_email_validity(user_info.email))
             throw Exception(ConstNames::Bad_Request_msg);
         if(mode == ConstNames::Signup_Order){
@@ -353,32 +441,35 @@ Database::UserInfo Backend::fill_user_info(const data_t& data, string mode)
 Database::User::FilterInfo Backend::fill_filter_info(const data_t& data)
 {
     Database::User::FilterInfo filter_info = Database::User::FilterInfo();
-    filter_info.city = find_info(ConstNames::City, data);
-    filter_info.mode = Database::User::FilterMode::City;
     string min_star = find_info(ConstNames::Min_Star, data);
     string max_star = find_info(ConstNames::Max_Star, data);
-    if(hotel_stars_in_range(min_star, max_star))
+    string min_price = find_info(ConstNames::Min_Price, data);
+    string max_price = find_info(ConstNames::Max_Price, data);
+    string type = find_info(ConstNames::Type, data);
+    string quantity = find_info(ConstNames::Quantity, data);
+    string check_in = find_info(ConstNames::Check_In, data);
+    string check_out = find_info(ConstNames::Check_Out, data);
+    string city = find_info(ConstNames::City, data);
+    if(city != ConstNames::Empty_Str)
+    {
+        filter_info.city = city;
+        filter_info.mode = Database::User::FilterMode::City;
+    }
+    else if(valid_hotel_star(min_star, max_star))
     {
         filter_info.min_star = stoi(min_star);
         filter_info.max_star = stoi(max_star);
         filter_info.mode = Database::User::FilterMode::StarRange;
     }
-    string min_price = find_info(ConstNames::Min_Price, data);
-    string max_price = find_info(ConstNames::Max_Price, data);
-    if(valid_price_range(min_price, max_price))
+    else if(valid_price_range(min_price, max_price))
     {
         filter_info.min_price = stof(min_price);
         filter_info.max_price = stof(max_price);
         filter_info.mode = Database::User::FilterMode::AvgPrice;
     }
-    string type = find_info(ConstNames::Type, data);
-    if(type != ConstNames::Empty_Str)
-        filter_info.type = filter_info.m_room_type[type];
-    string quantity = find_info(ConstNames::Quantity, data);
-    string check_in = find_info(ConstNames::Check_In, data);
-    string check_out = find_info(ConstNames::Check_Out, data);
-    if(valid_advanced_filter(quantity, check_in, check_out))
+    else if(valid_advanced_filter(type, quantity, check_in, check_out))
     {
+        filter_info.type = filter_info.m_room_type[type];
         filter_info.quantity = stoi(quantity);
         filter_info.check_in = stoi(check_in);
         filter_info.check_out = stoi(check_out);
@@ -387,7 +478,69 @@ Database::User::FilterInfo Backend::fill_filter_info(const data_t& data)
     return filter_info;
 }
 
-bool Backend::hotel_stars_in_range(string min_star, string max_star)
+Database::User::ReserveInfo Backend::fill_reserve_info(const data_t& data)
+{
+    Database::User::ReserveInfo reserve_info = Database::User::ReserveInfo();
+    string hotel_id, quantity, type, check_in, check_out;
+    hotel_id = find_info(ConstNames::Hotel, data);
+    type = find_info(ConstNames::Type, data);
+    quantity = find_info(ConstNames::Quantity, data);
+    check_in = find_info(ConstNames::Check_In, data);
+    check_out = find_info(ConstNames::Check_Out, data);
+    if(hotel_id != ConstNames::Empty_Str && valid_advanced_filter(type, quantity, check_in, check_out))
+    {
+        reserve_info.hotel_id = hotel_id;
+        reserve_info.check_in = stoi(check_in);
+        reserve_info.check_out = stoi(check_out);
+        reserve_info.quantity = stoi(quantity);
+        reserve_info.type = reserve_info.m_room_type[type];
+        return reserve_info;
+    }
+    throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Database::Hotel::RatingInfo Backend::fill_rating_info(const data_t& data)
+{
+    Database::Hotel::RatingInfo rating_info;
+    string hotel_id, location, cleanliness, staff, facilities, value_for_money, overall_rating;
+    hotel_id = find_info(ConstNames::Hotel, data);
+    location = find_info(ConstNames::Location, data);
+    cleanliness = find_info(ConstNames::Cleanliness, data);
+    staff = find_info(ConstNames::Staff, data);
+    facilities = find_info(ConstNames::Facilities, data);
+    value_for_money = find_info(ConstNames::Value_For_Money, data);
+    overall_rating = find_info(ConstNames::Overall_Rating, data);
+    if(valid_rating_info(hotel_id, location, cleanliness, staff, facilities, value_for_money, overall_rating))
+    {
+        rating_info.hotel_id = hotel_id;
+        rating_info.location = stof(location);
+        rating_info.cleanliness = stof(cleanliness);
+        rating_info.staff = stof(staff);
+        rating_info.facilities = stof(facilities);
+        rating_info.value_for_money = stof(value_for_money);
+        rating_info.overall_rating = stof(overall_rating);
+        rating_info.user = *online_users.begin();
+        return rating_info;
+    }
+    throw Exception(ConstNames::Bad_Request_msg);
+}
+
+bool Backend::valid_rating_info(std::string hotel_id, std::string location, std::string cleanliness, std::string staff, std::string facilities, std::string value_for_money, std::string overall_rating)
+{
+    if(hotel_id != ConstNames::Empty_Str && location != ConstNames::Empty_Str && cleanliness != ConstNames::Empty_Str && staff != ConstNames::Empty_Str && facilities != ConstNames::Empty_Str && value_for_money != ConstNames::Empty_Str && overall_rating != ConstNames::Empty_Str)
+    {
+        vector<float> ratings = {stof(location), stof(cleanliness), stof(staff), stof(facilities), stof(value_for_money), stof(overall_rating)};
+        for(float rate : ratings)
+        {
+            if(!in_range(rate, ConstNames::Min_Rate, ConstNames::Max_Rate))
+                throw Exception(ConstNames::Bad_Request_msg);
+        }
+        return true;
+    }
+    return false;
+}
+
+bool Backend::valid_hotel_star(string min_star, string max_star)
 {
     if(min_star != ConstNames::Empty_Str && max_star != ConstNames::Empty_Str)
     {
@@ -413,16 +566,23 @@ bool Backend::valid_price_range(string min_price, string max_price)
     return false;
 }
 
-bool Backend::valid_advanced_filter(string quantity, string check_in, string check_out)
+bool Backend::valid_advanced_filter(string type, string quantity, string check_in, string check_out)
 {
-    if(quantity != ConstNames::Empty_Str && check_in != ConstNames::Empty_Str && check_out != ConstNames::Empty_Str)
+    if(type != ConstNames::Empty_Str && quantity != ConstNames::Empty_Str && check_in != ConstNames::Empty_Str && check_out != ConstNames::Empty_Str)
     {
-        int q = stoi(quantity), in = stoi(check_in), out = stoi(check_in);
-        if(q >= ConstNames::No_Room && in >= ConstNames::Minimum_Hotel_Reserve && in <= out && out <= ConstNames::Maximum_Hotel_Reserve)
+        int q = stoi(quantity), in = stoi(check_in), out = stoi(check_out);
+        if(valid_advanced_filter_type(type) && q > ConstNames::No_Room && in >= ConstNames::Minimum_Hotel_Reserve && in <= out && out <= ConstNames::Maximum_Hotel_Reserve)
             return true;
         else
             throw Exception(ConstNames::Bad_Request_msg);
     }
+    throw Exception(ConstNames::Bad_Request_msg);
+}
+
+bool Backend::valid_advanced_filter_type(string type)
+{
+    if(type == ConstNames::StandardRoom || type == ConstNames::DeluxeRoom || type == ConstNames::LuxuryRoom || type == ConstNames::PremiumRoom)
+        return true;
     return false;
 }
 
@@ -479,14 +639,54 @@ bool Backend::info_exist(iterator it, iterator next, iterator end)
 }
 
 template<class T>
-hash_t Backend::hash_password(T password)
+hash_t Backend::hashing(T raw)
 {
     hash<T> hash_password;
-    return hash_password(password);
+    return hash_password(raw);
 }
 
 bool Backend::check_email_validity(const string& email)
 {
     const regex pattern("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
     return regex_match(email,pattern);
+}
+
+template <class T>
+bool Backend::in_range(T value, T min, T max)
+{
+    if(value >= min && value <= max)
+        return true;
+    return false;
+}
+
+void Backend::set_filters(const Database::User::FilterInfo& filter_info)
+{
+    object_relational->set_filter(filter_info, *online_users.begin());
+}
+
+Content Backend::booked_out(Database::User::ReserveInfo& reserve_info)
+{
+    return object_relational->booked_out(reserve_info, *online_users.begin());
+}
+
+void Backend::construct_maps()
+{
+    func_method_map.insert(make_pair(ConstNames::POST_METHOD, &Backend::post_request));
+    func_method_map.insert(make_pair(ConstNames::GET_METHOD, &Backend::get_request));
+    func_method_map.insert(make_pair(ConstNames::DELETE_METHOD, &Backend::delete_request));
+    func_post_map.insert(make_pair(ConstNames::Signup_Order, &Backend::signup));
+    func_post_map.insert(make_pair(ConstNames::Login_Order, &Backend::login));
+    func_post_map.insert(make_pair(ConstNames::Logout_Order, &Backend::logout));
+    func_post_map.insert(make_pair(ConstNames::Wallet_Order, &Backend::wallet_post));
+    func_post_map.insert(make_pair(ConstNames::Filter_Order, &Backend::post_filter));
+    func_post_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::post_reserve));
+    func_post_map.insert(make_pair(ConstNames::Comment_Order, &Backend::post_comment));
+    func_post_map.insert(make_pair(ConstNames::Rating_Order, &Backend::post_rating));
+    func_get_map.insert(make_pair(ConstNames::Wallet_Order, &Backend::wallet_get));
+    func_get_map.insert(make_pair(ConstNames::Get_Hotels_Order, &Backend::get_full_hotel));
+    func_get_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::get_reserve));
+    func_get_map.insert(make_pair(ConstNames::Comment_Order, &Backend::get_comment));
+    func_get_map.insert(make_pair(ConstNames::Rating_Order, &Backend::get_rating));
+    func_delete_map.insert(make_pair(ConstNames::Filter_Order, &Backend::delete_filter));
+    func_delete_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::delete_reserve));
 }

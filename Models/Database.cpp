@@ -3,7 +3,10 @@
 #include "../ConstNames.hpp"
 #include "./User/User.hpp"
 #include "../Exception/Exception.hpp"
+#include "./User/ReserveCase.hpp"
+#include "Comment.hpp"
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 Database::HotelInfo::HotelInfo(info_t u_id, info_t prop_name, num_t hotel_r, info_t hotel_ov, info_t prop_amenities,
@@ -119,4 +122,53 @@ info_t Database::get_hotels(info_t hotel_id)
     if(hotel == nullptr)
         throw Exception(ConstNames::Not_Found_msg);
     return hotel->get_full_info();
+}
+
+info_t Database::booked_out(User* user, Hotel* hotel, int quantity, int check_in, int check_out, int type)
+{
+    string reserved_room_id = hotel->booked_out(user, type, quantity, check_in, check_out);
+    return reserved_room_id;
+}
+
+info_t Database::get_reserve(User *user)
+{
+    User::l_booked reserves = user->get_reserve();
+    if(reserves.empty())
+        throw Exception(ConstNames::Empty_msg);
+    ostringstream os;
+    string delim = ConstNames::Empty_Str;
+    for(auto reserve_itr = reserves.begin(); reserve_itr != reserves.end(); reserve_itr++)
+    {
+        os << delim << ConstNames::ID << ConstNames::Colon << ConstNames::Space << (*reserve_itr)->id << ConstNames::Space;
+        os << ConstNames::Hotel << ConstNames::Colon << ConstNames::Space << (*reserve_itr)->hotel->id << ConstNames::Space;
+        os << ConstNames::Room << ConstNames::Colon << ConstNames::Space << Hotel::Room::room_string[(*reserve_itr)->rooms[0]->type] << ConstNames::Space;
+        os << ConstNames::Quantity << ConstNames::Colon << ConstNames::Space << (*reserve_itr)->rooms.size() << ConstNames::Space;
+        os << ConstNames::Cost << ConstNames::Colon << ConstNames::Space << (*reserve_itr)->cost << ConstNames::Space;
+        os << ConstNames::Check_In << ConstNames::Space << (*reserve_itr)->check_in << ConstNames::Space;
+        os << ConstNames::Check_Out << ConstNames::Space << (*reserve_itr)->check_out << ConstNames::Space;
+        delim = ConstNames::New_Line;
+    }
+    return os.str();
+}
+
+void Database::post_comment(User *user, std::string hotel_id, std::string comment)
+{
+    auto hotel = query_in_hotels(hotel_id);
+    if(hotel == nullptr)
+        throw Exception(ConstNames::Not_Found_msg);
+    comments.push_front(new Comment(comment, user, hotel));
+}
+
+Database::l_comments Database::get_comment(std::string hotel_id)
+{
+    auto hotel = query_in_hotels(hotel_id);
+    if(hotel == nullptr)
+        throw Exception(ConstNames::Not_Found_msg);
+    l_comments get_comment;
+    for(auto comment_itr = comments.begin(); comment_itr != comments.end(); comment_itr++)
+    {
+        if((*comment_itr)->hotel == hotel)
+            get_comment.push_back(*comment_itr);
+    }
+    return get_comment;
 }

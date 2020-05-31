@@ -1,7 +1,34 @@
 #include "ReserveCase.hpp"
 #include "../../ConstNames.hpp"
-
-int ReserveCase::current_id = ConstNames::First_Reserve_Id;
-
+using namespace std;
 
 
+Database::User::ReserveCase::ReserveCase(Database::Hotel* hotel, v_rooms& b_rooms, float price, int check_in, int check_out, list<int>& l_id)
+{
+    this->id = this->generate_id(l_id);
+    this->hotel = hotel;
+    this->rooms = b_rooms;
+    this->cost = price;
+    this->check_in = check_in;
+    this->check_out = check_out;
+}
+
+Database::User::ReserveCase::~ReserveCase()
+{
+    for(auto room_itr = rooms.begin(); room_itr != rooms.end(); room_itr++)
+        (*room_itr)->delete_reserve(check_in, check_out);
+    rooms.clear();
+}
+
+
+int Database::User::ReserveCase::generate_id(std::list<int> &l_id)
+{
+    if(l_id.empty())
+    {
+        l_id.push_front(ConstNames::First_Reserve_Id);
+        return *l_id.begin();
+    }
+    auto id = l_id.begin();
+    l_id.push_front(*id + 1);
+    return *l_id.begin();
+}

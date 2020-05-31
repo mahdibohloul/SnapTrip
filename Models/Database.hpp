@@ -66,19 +66,27 @@ public:
 public:
     Database();
     ~Database();
+
     void hotel_setup(const HotelInfo& hotel_info);
     void user_setup(const UserInfo& user_info);
     void increase_user_amount(const UserInfo& user_info, User* user);
+    void post_comment(User* user, std::string hotel_id, std::string comment);
+
     info_t print_account_information(const UserInfo& user_info, User* user);
     info_t get_hotels(User* user);
     info_t get_hotels(info_t hotel_id);
+    info_t booked_out(User* user, Hotel* hotel, int quantity, int check_in, int check_out, int type);
+    info_t get_reserve(User* user);
+
     User* query_in_users(UserInfo user_info);
     User* query_in_users(UserInfo user_info, const l_users& users);
+
     Hotel* query_in_hotels(info_t hotel_id);
+
+    l_comments get_comment(std::string hotel_id);
 
 private:
     bool check_info(User* current_user, UserInfo user_info);
-
 
 private:
     l_users users;

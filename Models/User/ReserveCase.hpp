@@ -1,30 +1,30 @@
 #ifndef _RESERVECASE_H
 #define _RESERVECASE_H
 
-#include "../Rooms/Room.hpp"
+#include "User.hpp"
 #include <list>
 
-typedef int day_t;
-
-class ReserveCase
+class Database::User::ReserveCase
 {
 public:
-    typedef std::list<Database::Hotel::Room*> v_rooms;
+    typedef std::vector<Database::Hotel::Room*> v_rooms;
+    friend class User;
+    friend class Database;
 
 public:
     ~ReserveCase();
 
 private:
-    ReserveCase();
+    ReserveCase(Database::Hotel* hotel, v_rooms& b_rooms, float price, int check_in, int check_out, std::list<int>& l_id);
+    int generate_id(std::list<int>& l_id);
 
 private:
-    static int current_id;
-    t_id id;
+    int id;
     Database::Hotel* hotel;
     v_rooms rooms;
     float cost;
-    day_t check_in;
-    day_t check_out;
+    int check_in;
+    int check_out;
 };
 
 #endif

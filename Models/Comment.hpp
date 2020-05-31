@@ -7,10 +7,14 @@
 class Database::Comment
 {
 public:
+    friend class Database;
+
+public:
     ~Comment();
+    info_t get_info();
 
 private:
-    Comment();
+    Comment(std::string comment, User* user, Hotel* hotel);
 
 private:
     std::string comment;
@@ -20,3 +24,5 @@ private:
 
 
 #endif
+
+

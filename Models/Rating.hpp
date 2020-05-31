@@ -6,10 +6,13 @@
 class Database::Hotel::Rating
 {
 public:
+    friend class Hotel;
+
+public:
     ~Rating();
 
 private:
-    Rating();
+    Rating(const RatingInfo& rating_info);
 
 private:
     float location;
@@ -18,7 +21,6 @@ private:
     float facilities;
     float value_for_money;
     float overall_rating;
-    User* user;
 };
 
 #endif

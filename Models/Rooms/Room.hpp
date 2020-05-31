@@ -28,23 +28,28 @@ public:
 public:
     typedef std::vector<ReserveRoom> v_reserve;
     friend class Hotel;
+    friend class Database;
+    typedef std::map<Room_Class, std::string> m_room_to_string;
 
 public:
     virtual ~Room();
     static void reset_room_id(v_room& rooms);
     virtual void reset_id() = 0;
     virtual bool can_reserve(int check_in, int check_out) const;
+    virtual void delete_reserve(int check_in, int check_out);
 
 protected:
     Room(std::string id, enum Room_Class type, float price);
     virtual std::string generate_id() = 0;
     virtual bool overlap(ReserveRoom reserve, int check_in, int check_out) const;
+    virtual void booked(int check_in, int check_out);
 
 protected:
     Room_Class type;
     float price;
     t_id id;
     v_reserve reserves;
+    static m_room_to_string room_string;
 };
 
 #endif

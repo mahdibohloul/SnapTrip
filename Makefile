@@ -20,10 +20,10 @@ utrip.out: ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BU
 ${BUILD_DIR}/main.o: main.cpp ConstNames.hpp ${USERINTERFACE_DIR}/UserInterface.hpp | build_dir
 	${CC_EXEC} -c main.cpp -o ${BUILD_DIR}/main.o
 
-${BUILD_DIR}/Database.o: ${DB_DIR}/Database.cpp ${DB_DIR}/Database.hpp ${DB_DIR}/Hotel.hpp ${USER_DIR}/User.hpp ConstNames.hpp ${EXCEPTION_DIR}/Exception.hpp | build_dir
+${BUILD_DIR}/Database.o: ${DB_DIR}/Database.cpp ${DB_DIR}/Database.hpp ${DB_DIR}/Hotel.hpp ${USER_DIR}/User.hpp ConstNames.hpp ${EXCEPTION_DIR}/Exception.hpp ${USER_DIR}/ReserveCase.hpp ${DB_DIR}/Comment.hpp | build_dir
 	${CC_EXEC} -c ${DB_DIR}/Database.cpp -o ${BUILD_DIR}/Database.o
 
-${BUILD_DIR}/Hotel.o: ${DB_DIR}/Hotel.cpp ${DB_DIR}/Hotel.hpp ${DB_DIR}/Database.hpp ${ROOMS_DIR}/StandardRoom.hpp ${ROOMS_DIR}/DeluxeRoom.hpp ${ROOMS_DIR}/LuxuryRoom.hpp ${ROOMS_DIR}/PremiumRoom.hpp | build_dir
+${BUILD_DIR}/Hotel.o: ${DB_DIR}/Hotel.cpp ${DB_DIR}/Hotel.hpp ${DB_DIR}/Database.hpp ${ROOMS_DIR}/StandardRoom.hpp ${ROOMS_DIR}/DeluxeRoom.hpp ${ROOMS_DIR}/LuxuryRoom.hpp ${ROOMS_DIR}/PremiumRoom.hpp ${USER_DIR}/User.hpp ${EXCEPTION_DIR}/Exception.hpp | build_dir
 	${CC_EXEC} -c ${DB_DIR}/Hotel.cpp -o ${BUILD_DIR}/Hotel.o
 
 ${BUILD_DIR}/Room.o: ${ROOMS_DIR}/Room.cpp ${ROOMS_DIR}/Room.hpp ${DB_DIR}/Hotel.hpp ConstNames.hpp | build_dir
@@ -41,10 +41,10 @@ ${BUILD_DIR}/PremiumRoom.o: ${ROOMS_DIR}/PremiumRoom.cpp ${ROOMS_DIR}/PremiumRoo
 ${BUILD_DIR}/LuxuryRoom.o: ${ROOMS_DIR}/LuxuryRoom.cpp ${ROOMS_DIR}/LuxuryRoom.hpp ${ROOMS_DIR}/Room.hpp ConstNames.hpp | build_dir
 	${CC_EXEC} -c ${ROOMS_DIR}/LuxuryRoom.cpp -o ${BUILD_DIR}/LuxuryRoom.o
 
-${BUILD_DIR}/ReserveCase.o: ${USER_DIR}/ReserveCase.cpp ${USER_DIR}/ReserveCase.hpp ${ROOMS_DIR}/Room.hpp ConstNames.hpp | build_dir
+${BUILD_DIR}/ReserveCase.o: ${USER_DIR}/ReserveCase.cpp ${USER_DIR}/ReserveCase.hpp ${USER_DIR}/User.hpp ConstNames.hpp | build_dir
 	${CC_EXEC} -c ${USER_DIR}/ReserveCase.cpp -o ${BUILD_DIR}/ReserveCase.o
 
-${BUILD_DIR}/User.o: ${USER_DIR}/User.cpp ${USER_DIR}/User.hpp ${USER_DIR}/ReserveCase.hpp ${FILTER_DIR}/CityFilter.hpp ${FILTER_DIR}/AvgPriceFilter.hpp ${FILTER_DIR}/AdvancedFilter.hpp ${FILTER_DIR}/StarRangeFilter.hpp | build_dir
+${BUILD_DIR}/User.o: ${USER_DIR}/User.cpp ${USER_DIR}/User.hpp ${ROOMS_DIR}/Room.hpp ${FILTER_DIR}/CityFilter.hpp ${FILTER_DIR}/AvgPriceFilter.hpp ${FILTER_DIR}/AdvancedFilter.hpp ${FILTER_DIR}/StarRangeFilter.hpp | build_dir
 	${CC_EXEC} -c ${USER_DIR}/User.cpp -o ${BUILD_DIR}/User.o
 
 ${BUILD_DIR}/Filter.o: ${FILTER_DIR}/Filter.cpp ${FILTER_DIR}/Filter.hpp ${USER_DIR}/User.hpp | build_dir
@@ -68,7 +68,7 @@ ${BUILD_DIR}/Comment.o: ${DB_DIR}/Comment.cpp ${DB_DIR}/Comment.cpp ${USER_DIR}/
 ${BUILD_DIR}/API.o: ${API_DIR}/API.cpp ${API_DIR}/API.hpp ${ORM_DIR}/ObjectRelational.hpp ${BACKEND_DIR}/Backend.hpp | build_dir
 	${CC_EXEC} -c ${API_DIR}/API.cpp -o ${BUILD_DIR}/API.o
 
-${BUILD_DIR}/ObjectRelational.o: ${ORM_DIR}/ObjectRelational.cpp ${ORM_DIR}/ObjectRelational.hpp ConstNames.hpp ${DB_DIR}/Database.hpp ${BACKEND_DIR}/Backend.hpp | build_dir
+${BUILD_DIR}/ObjectRelational.o: ${ORM_DIR}/ObjectRelational.cpp ${ORM_DIR}/ObjectRelational.hpp ConstNames.hpp ${DB_DIR}/Database.hpp ${BACKEND_DIR}/Backend.hpp ${DB_DIR}/Comment.hpp | build_dir
 	${CC_EXEC} -c ${ORM_DIR}/ObjectRelational.cpp -o ${BUILD_DIR}/ObjectRelational.o
 
 ${BUILD_DIR}/UserInterface.o: ${USERINTERFACE_DIR}/UserInterface.cpp ${USERINTERFACE_DIR}/UserInterface.hpp ConstNames.hpp ${API_DIR}/API.hpp | build_dir
