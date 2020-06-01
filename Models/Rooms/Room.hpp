@@ -30,6 +30,8 @@ public:
     friend class Hotel;
     friend class Database;
     typedef std::map<Room_Class, std::string> m_room_to_string;
+    static m_room_to_string room_string;
+    t_id get_id();
 
 public:
     virtual ~Room();
@@ -49,7 +51,6 @@ protected:
     float price;
     t_id id;
     v_reserve reserves;
-    static m_room_to_string room_string;
 };
 
 #endif

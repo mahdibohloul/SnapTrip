@@ -12,9 +12,6 @@ Database::Comment::Comment(string comment, User* user, Hotel* hotel)
 
 Database::Comment::~Comment() {}
 
-info_t Database::Comment::get_info()
-{
-    ostringstream os;
-    os << user->username << ConstNames::Colon << ConstNames::Space << comment;
-    return os.str();
-}
+info_t Database::Comment::get_writer() { return user->username; }
+
+info_t Database::Comment::get_comment() { return comment; }

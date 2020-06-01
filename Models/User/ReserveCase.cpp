@@ -32,3 +32,15 @@ int Database::User::ReserveCase::generate_id(std::list<int> &l_id)
     l_id.push_front(*id + 1);
     return *l_id.begin();
 }
+
+int Database::User::ReserveCase::get_reserve_id() { return id; }
+
+string Database::User::ReserveCase::get_hotel_reserved_id() { return hotel->id; }
+
+int Database::User::ReserveCase::get_quantity_of_reserves() { return rooms.size(); }
+
+float Database::User::ReserveCase::get_cost_of_reserves() { return cost; }
+
+pair<int, int> Database::User::ReserveCase::get_reserved_days() { return make_pair(check_in, check_out); }
+
+string Database::User::ReserveCase::get_type_of_reserved_rooms() { return Database::Hotel::Room::room_string[rooms[0]->type]; }

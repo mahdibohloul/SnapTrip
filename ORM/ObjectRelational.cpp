@@ -2,6 +2,7 @@
 #include "../ConstNames.hpp"
 #include "../Exception/Exception.hpp"
 #include "../Models/Comment.hpp"
+#include "../API/Result/Result.hpp"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -85,19 +86,22 @@ void ObjectRelational::deposit_in(const Database::UserInfo& user_info, Database:
     database->increase_user_amount(user_info, user);
 }
 
-Content ObjectRelational::print_account_information(const Database::UserInfo& user_info, Database::User* user)
+void ObjectRelational::get_account_information(const Database::UserInfo& user_info, Database::User* user)
 {
-    return database->print_account_information(user_info, user);
+    auto transactions = database->get_account_information(user_info, user);
+    responding(transactions);
 }
 
-Content ObjectRelational::get_hotels(Database::User *user)
+void ObjectRelational::get_hotels(Database::User *user)
 {
-    return database->get_hotels(user);
+    auto hotels = database->get_hotels(user);
+    responding(hotels);
 }
 
-Content ObjectRelational::get_hotels(info_t hotel_id)
+void ObjectRelational::get_hotels(info_t hotel_id)
 {
-    return database->get_hotels(hotel_id);
+    auto hotel = database->get_hotels(hotel_id);
+    responding(hotel);
 }
 
 void ObjectRelational::set_filter(const Database::User::FilterInfo &filter_info, Database::User *user)
@@ -110,7 +114,7 @@ void ObjectRelational::delete_filter(Database::User *user)
     user->delete_filter();
 }
 
-Content ObjectRelational::booked_out(Database::User::ReserveInfo& reserve_info, Database::User* user)
+void ObjectRelational::booked_out(Database::User::ReserveInfo& reserve_info, Database::User* user)
 {
     Database::Hotel* hotel = database->query_in_hotels(reserve_info.hotel_id);
     if(hotel == nullptr)
@@ -119,18 +123,17 @@ Content ObjectRelational::booked_out(Database::User::ReserveInfo& reserve_info, 
         throw Exception(ConstNames::Not_Enough_Room_msg);
     if(!user->can_pay(hotel->cost_to_reserve(reserve_info.type, reserve_info.quantity)))
         throw Exception(ConstNames::Not_Enough_Credit_msg);
-    return database->booked_out(user, hotel, reserve_info.quantity, reserve_info.check_in, reserve_info.check_out, reserve_info.type);
+    database->booked_out(user, hotel, reserve_info.quantity, reserve_info.check_in, reserve_info.check_out, reserve_info.type);
 }
 
-Content ObjectRelational::get_reserve(Database::User* user)
+void ObjectRelational::get_reserve(Database::User* user)
 {
-    return database->get_reserve(user);
+    database->get_reserve(user);
 }
 
-Content ObjectRelational::delete_reserve(Database::User* user, int id)
+void ObjectRelational::delete_reserve(Database::User* user, int id)
 {
     user->delete_reserve(id);
-    return ConstNames::OK_msg;
 }
 
 void ObjectRelational::post_comment(Database::User* user, string hotel_id, string comment)
@@ -138,19 +141,10 @@ void ObjectRelational::post_comment(Database::User* user, string hotel_id, strin
     database->post_comment(user, hotel_id, comment);
 }
 
-Content ObjectRelational::get_comment(std::string hotel_id)
+void ObjectRelational::get_comment(std::string hotel_id)
 {
     auto comments = database->get_comment(hotel_id);
-    ostringstream os;
-    string delim = ConstNames::Empty_Str;
-    if(comments.empty())
-        return os.str();
-    for(auto comment_itr = comments.begin(); comment_itr != comments.end(); comment_itr++)
-    {
-        os << delim << (*comment_itr)->get_info();
-        delim = ConstNames::New_Line;
-    }
-    return os.str();
+    responding(comments);
 }
 
 void ObjectRelational::post_rating(Database::Hotel::RatingInfo &rating_info)
@@ -161,19 +155,26 @@ void ObjectRelational::post_rating(Database::Hotel::RatingInfo &rating_info)
     hotel->post_rating(rating_info);
 }
 
-Content ObjectRelational::get_rating(std::string hotel_id)
+void ObjectRelational::get_rating(std::string hotel_id)
 {
     auto hotel = database->query_in_hotels(hotel_id);
     if(hotel == nullptr)
         throw Exception(ConstNames::Not_Found_msg);
     auto avg_ratings = hotel->get_avg_ratings();
-    ostringstream os;
-    os << setprecision(ConstNames::Precision) << fixed;
-    os << ConstNames::Location << ConstNames::Colon << ConstNames::Space << avg_ratings.location << endl;
-    os << ConstNames::Cleanliness << ConstNames::Colon << ConstNames::Space << avg_ratings.cleanliness << endl;
-    os << ConstNames::Staff << ConstNames::Colon << ConstNames::Space << avg_ratings.staff << endl;
-    os << ConstNames::Facilities << ConstNames::Colon << ConstNames::Space << avg_ratings.facilities << endl;
-    os << ConstNames::Value_For_Money_sep << ConstNames::Colon << ConstNames::Space << avg_ratings.value_for_money << endl;
-    os << ConstNames::Overall_Rating_sep << ConstNames::Colon << ConstNames::Space << avg_ratings.overall_rating;
-    return os.str();
+    responding(avg_ratings);
+}
+
+template<class T>
+void API::responding(T response)
+{
+    if(instance->result != nullptr)
+        delete instance->result;
+    instance->result = new Result(response);
+}
+
+template<class T>
+void ObjectRelational::responding(T response)
+{
+    auto api = API::get_instance();
+    api->responding(response);
 }

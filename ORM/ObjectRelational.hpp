@@ -42,19 +42,21 @@ public:
 
     bool authentication(Database::UserInfo user_info, const std::string mode, const Database::l_users& users = Database::l_users());
 
-    Content print_account_information(const Database::UserInfo& user_info, Database::User* user);
-    Content get_hotels(Database::User* user);
-    Content get_hotels(info_t hotel_id);
-    Content booked_out(Database::User::ReserveInfo& reserve_info, Database::User* user);
-    Content get_reserve(Database::User* user);
-    Content get_comment(std::string hotel_id);
-    Content get_rating(std::string hotel_id);
-    Content delete_reserve(Database::User* user, int id);
+    void get_account_information(const Database::UserInfo& user_info, Database::User* user);
+    void get_hotels(Database::User* user);
+    void get_hotels(info_t hotel_id);
+    void booked_out(Database::User::ReserveInfo& reserve_info, Database::User* user);
+    void get_reserve(Database::User* user);
+    void get_comment(std::string hotel_id);
+    void get_rating(std::string hotel_id);
+    void delete_reserve(Database::User* user, int id);
 
     Database::User* get_specific_user(Database::UserInfo user_info, const std::string& mode);
 
 private:
     ObjectRelational();
+    template<class T>
+    void responding(T response);
 
 private:
     Database* database;

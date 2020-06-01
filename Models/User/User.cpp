@@ -60,33 +60,23 @@ void Database::User::deposit(float amount)
     wallet.transactions.push_front(wallet.amount);
 }
 
-info_t Database::User::get_account_information(int num_transactions)
+Database::User::l_transactions Database::User::get_account_information(int num_transactions)
 {
-    ostringstream os;
-    os << get_transactions_info(num_transactions);
-    return os.str();
-}
-
-info_t Database::User::get_transactions_info(int num_transactions)
-{
-    ostringstream os;
-    string delim = ConstNames::Empty_Str;
+    l_transactions transactions;
     if(!wallet.transactions.empty())
     {
-        for(auto transaction_itr = wallet.transactions.begin(); transaction_itr != wallet.transactions.end() && num_transactions > ConstNames::Minimum_No_Transactions; transaction_itr++){
-            os <<  delim << *transaction_itr;
-            num_transactions--;
-            delim = ConstNames::New_Line;
-        }
+        for(auto transaction_itr = wallet.transactions.begin(); transaction_itr != wallet.transactions.end() && num_transactions > ConstNames::Minimum_No_Transactions; transaction_itr++, num_transactions--)
+            transactions.push_back(*transaction_itr);
+        return transactions;
     }
-    return os.str();
+    return {0};
 }
 
-info_t Database::User::get_hotels(Database::l_hotels& hotels)
+Database::l_hotels Database::User::get_hotels(Database::l_hotels& hotels)
 {
     sort_hotels(hotels);
     if(filters.empty())
-        return get_hotels_info(hotels);
+        return hotels;
     else{
         auto filter_itr = filters.begin();
         return get_filtered_hotels(hotels, filter_itr);
@@ -105,24 +95,12 @@ void Database::User::set_filters(const FilterInfo &filter_info)
         filters[FilterMode::Advanced] = new AdvancedFilter(filter_info);
 }
 
-info_t Database::User::get_hotels_info(Database::l_hotels& hotels)
-{
-    ostringstream os;
-    string delim = ConstNames::Empty_Str;
-    for(auto hotel_itr = hotels.begin(); hotel_itr != hotels.end(); hotel_itr++)
-    {
-        os << delim << (*hotel_itr)->to_string();
-        delim = ConstNames::New_Line;
-    }
-    return os.str();
-}
-
-info_t Database::User::get_filtered_hotels(Database::l_hotels& hotels, m_filter::iterator& map_itr)
+Database::l_hotels Database::User::get_filtered_hotels(Database::l_hotels& hotels, m_filter::iterator& map_itr)
 {
     if(map_itr == filters.end()){
         if(hotels.empty())
             throw Exception(ConstNames::Empty_msg);
-        return get_hotels_info(hotels);
+        return hotels;
     }
     ((*map_itr).second)->reset_filter();
     ((*map_itr).second)->filter(hotels);

@@ -1,4 +1,6 @@
 #include "API.hpp"
+#include "./Result/Result.hpp"
+using namespace std;
 
 API* API::instance = nullptr;
 
@@ -37,7 +39,21 @@ Backend::data_t API::parse_content(Content content, char separator)
     return backend->parse_content(content, separator);
 }
 
-Content API::command_processor(Backend::data_t command_data)
+void API::command_processor(Backend::data_t command_data)
 {
-    return backend->command_processor(command_data);
+    backend->command_processor(command_data);
+}
+
+
+template<class T>
+void API::responding(T response)
+{
+    if(instance->result != nullptr)
+        delete instance->result;
+    instance->result = new Result(response);
+}
+
+string API::get_response()
+{
+    return result->get_result();
 }

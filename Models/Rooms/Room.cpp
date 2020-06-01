@@ -63,3 +63,5 @@ void Database::Hotel::Room::delete_reserve(int check_in, int check_out)
     }
     reserves.erase(want_delete);
 }
+
+t_id Database::Hotel::Room::get_id() { return id; }

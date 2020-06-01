@@ -59,23 +59,6 @@ info_t Database::Hotel::to_string()
     return os.str();
 }
 
-info_t Database::Hotel::get_full_info()
-{
-    ostringstream os;
-    os << id << endl;
-    os << property_name << endl;
-    os << setprecision(ConstNames::Precision) << fixed;
-    os << ConstNames::Star << ConstNames::Colon << ConstNames::Space << hotel_star_rating << endl;
-    os << ConstNames::Overview << ConstNames::Colon << ConstNames::Space << hotel_overview << endl;
-    os << ConstNames::Amenities << ConstNames::Colon << ConstNames::Space << property_amenities << endl;
-    os << ConstNames::City << ConstNames::Colon << ConstNames::Space << city << endl;
-    os << ConstNames::Latitude << ConstNames::Colon << ConstNames::Space << geo_coordinates.latitude << endl;
-    os << ConstNames::Longitude << ConstNames::Colon << ConstNames::Space << geo_coordinates.longitude << endl;
-    os << ConstNames::Hashtag << ConstNames::Rooms << ConstNames::Colon << ConstNames::Space << get_num_of_rooms() << endl;
-    os << ConstNames::Price << ConstNames::Colon << ConstNames::Space << get_rooms_price();
-    return os.str();
-}
-
 void Database::Hotel::post_rating(RatingInfo &rating_info)
 {
     auto rating = map_ratings.find(rating_info.user);
@@ -125,26 +108,22 @@ bool Database::Hotel::in_range(Room* room, int check_in, int check_out, int type
     return false;
 }
 
-info_t Database::Hotel::booked_out(User* user, int type, int quantity, int check_in, int check_out)
+Database::Hotel::v_room Database::Hotel::booked_out(User* user, int type, int quantity, int check_in, int check_out)
 {
     v_room booked_rooms = v_room();
-    ostringstream os;
-    string delim;
     int q = 0;
     for(auto room_itr = rooms.begin(); room_itr != rooms.end() && q < quantity; room_itr++)
     {
         if(in_range(*room_itr, check_in, check_out, type)){
             q++;
             (*room_itr)->booked(check_in, check_out);
-            os << delim << (*room_itr)->id;
-            delim = ConstNames::Space;
             booked_rooms.push_back(*room_itr);
         }
     }
     int night_stay = ((check_out - check_in) < ConstNames::One_Night) ? ConstNames::One_Night : (check_out - check_in);
     user->pay_cost(night_stay * cost_to_reserve(type, quantity));
     user->add_reserve_case(this, booked_rooms, check_in, check_out, night_stay * cost_to_reserve(type, quantity));
-    return os.str();
+    return booked_rooms;
 }
 
 Database::Hotel::RatingInfo Database::Hotel::get_avg_ratings()
@@ -271,3 +250,15 @@ void Database::Hotel::clean_ratings_up()
     }
     map_ratings.clear();
 }
+
+info_t Database::Hotel::get_id() { return id; }
+
+info_t Database::Hotel::get_name() {return property_name; }
+
+int Database::Hotel::get_hotel_star() { return hotel_star_rating; }
+
+info_t Database::Hotel::get_hotel_overview() {return hotel_overview; }
+
+info_t Database::Hotel::get_amenities() { return property_amenities; }
+
+pair<float, float> Database::Hotel::get_coordinates() { return make_pair(geo_coordinates.latitude, geo_coordinates.longitude); }

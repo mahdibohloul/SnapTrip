@@ -11,7 +11,8 @@ public:
 
 public:
     ~Comment();
-    info_t get_info();
+    info_t get_writer();
+    info_t get_comment();
 
 private:
     Comment(std::string comment, User* user, Hotel* hotel);

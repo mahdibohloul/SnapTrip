@@ -63,9 +63,8 @@ void UserInterface::process()
         try
         {
             Backend::data_t command_data = api->parse_content(command, ConstNames::Space);
-            string output = api->command_processor(command_data);
-            if(output != ConstNames::Empty_Str)
-                cout << output << endl;
+            api->command_processor(command_data);
+            cout << api->get_response();
         }
         catch(const exception& ex)
         {

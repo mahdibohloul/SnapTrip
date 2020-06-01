@@ -6,6 +6,7 @@ SnapTrip, the final project of the Advanced Programming course, in phase 1, my f
 > User-Interface
 
 > API
+>> Result
 
 > Business-Logic
 

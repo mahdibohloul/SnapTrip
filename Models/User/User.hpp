@@ -71,11 +71,9 @@ private:
     User(const UserInfo& info);
 
     info_t generate_id();
-    info_t get_account_information(int num_transactions);
-    info_t get_transactions_info(int num_transactions);
-    info_t get_hotels(Database::l_hotels& hotels);
-    info_t get_hotels_info(Database::l_hotels& hotels);
-    info_t get_filtered_hotels(Database::l_hotels& hotels, m_filter::iterator& map_itr);
+    l_transactions get_account_information(int num_transactions);
+    Database::l_hotels get_hotels(Database::l_hotels& hotels);
+    Database::l_hotels get_filtered_hotels(Database::l_hotels& hotels, m_filter::iterator& map_itr);
 
     void sort_hotels(Database::l_hotels& hotels);
     void deposit(float amount);

@@ -72,11 +72,11 @@ public:
     void increase_user_amount(const UserInfo& user_info, User* user);
     void post_comment(User* user, std::string hotel_id, std::string comment);
 
-    info_t print_account_information(const UserInfo& user_info, User* user);
-    info_t get_hotels(User* user);
-    info_t get_hotels(info_t hotel_id);
-    info_t booked_out(User* user, Hotel* hotel, int quantity, int check_in, int check_out, int type);
-    info_t get_reserve(User* user);
+    std::list<float> get_account_information(const UserInfo& user_info, User* user);
+    l_hotels get_hotels(User* user);
+    Hotel* get_hotels(info_t hotel_id);
+    void booked_out(User* user, Hotel* hotel, int quantity, int check_in, int check_out, int type);
+    void get_reserve(User* user);
 
     User* query_in_users(UserInfo user_info);
     User* query_in_users(UserInfo user_info, const l_users& users);
@@ -90,6 +90,8 @@ private:
     void clean_users_up();
     void clean_hotels_up();
     void clean_comments_up();
+    template<typename T>
+    void responding(T response);
 
 private:
     l_users users;

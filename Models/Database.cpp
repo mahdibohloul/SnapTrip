@@ -5,6 +5,7 @@
 #include "../Exception/Exception.hpp"
 #include "./User/ReserveCase.hpp"
 #include "Comment.hpp"
+#include "../API/Result/Result.hpp"
 #include <iostream>
 #include <sstream>
 using namespace std;
@@ -109,51 +110,38 @@ void Database::increase_user_amount(const UserInfo &user_info, User *user)
     user->deposit(user_info.amount);
 }
 
-info_t Database::print_account_information(const UserInfo &user_info, User *user)
+list<float> Database::get_account_information(const UserInfo &user_info, User *user)
 {
     return user->get_account_information(user_info.no_transactions);
 }
 
-info_t Database::get_hotels(User* user)
+Database::l_hotels Database::get_hotels(User* user)
 {
     if(hotels.empty())
         throw Exception(ConstNames::Empty_msg);
     return user->get_hotels(hotels);
 }
 
-info_t Database::get_hotels(info_t hotel_id)
+Database::Hotel* Database::get_hotels(info_t hotel_id)
 {
     Hotel* hotel = query_in_hotels(hotel_id);
     if(hotel == nullptr)
         throw Exception(ConstNames::Not_Found_msg);
-    return hotel->get_full_info();
+    return hotel;
 }
 
-info_t Database::booked_out(User* user, Hotel* hotel, int quantity, int check_in, int check_out, int type)
+void Database::booked_out(User* user, Hotel* hotel, int quantity, int check_in, int check_out, int type)
 {
-    string reserved_room_id = hotel->booked_out(user, type, quantity, check_in, check_out);
-    return reserved_room_id;
+    auto reserved_rooms = hotel->booked_out(user, type, quantity, check_in, check_out);
+    responding(reserved_rooms);
 }
 
-info_t Database::get_reserve(User *user)
+void Database::get_reserve(User *user)
 {
     User::l_booked reserves = user->get_reserve();
     if(reserves.empty())
         throw Exception(ConstNames::Empty_msg);
-    ostringstream os;
-    string delim = ConstNames::Empty_Str;
-    for(auto reserve_itr = reserves.begin(); reserve_itr != reserves.end(); reserve_itr++)
-    {
-        os << delim << ConstNames::ID << ConstNames::Colon << ConstNames::Space << (*reserve_itr)->id << ConstNames::Space;
-        os << ConstNames::Hotel << ConstNames::Colon << ConstNames::Space << (*reserve_itr)->hotel->id << ConstNames::Space;
-        os << ConstNames::Room << ConstNames::Colon << ConstNames::Space << Hotel::Room::room_string[(*reserve_itr)->rooms[0]->type] << ConstNames::Space;
-        os << ConstNames::Quantity << ConstNames::Colon << ConstNames::Space << (*reserve_itr)->rooms.size() << ConstNames::Space;
-        os << ConstNames::Cost << ConstNames::Colon << ConstNames::Space << (*reserve_itr)->cost << ConstNames::Space;
-        os << ConstNames::Check_In << ConstNames::Space << (*reserve_itr)->check_in << ConstNames::Space;
-        os << ConstNames::Check_Out << ConstNames::Space << (*reserve_itr)->check_out << ConstNames::Space;
-        delim = ConstNames::New_Line;
-    }
-    return os.str();
+    responding(reserves);
 }
 
 void Database::post_comment(User *user, std::string hotel_id, std::string comment)
@@ -206,4 +194,19 @@ void Database::clean_comments_up()
         *comment_itr = nullptr;
     }
     comments.clear();
+}
+
+template<class T>
+void API::responding(T response)
+{
+    if(instance->result != nullptr)
+        delete instance->result;
+    instance->result = new Result(response);
+}
+
+template<typename T>
+void Database::responding(T response)
+{
+    auto api = API::get_instance();
+    api->responding(response);
 }

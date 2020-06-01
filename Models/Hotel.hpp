@@ -41,8 +41,15 @@ public:
     ~Hotel();
 
     info_t to_string();
-    info_t get_full_info();
     info_t get_city() const;
+    info_t get_id();
+    info_t get_name();
+    int get_hotel_star();
+    info_t get_hotel_overview();
+    info_t get_amenities();
+    info_t get_num_of_rooms();
+    info_t get_rooms_price();
+    std::pair<float, float> get_coordinates();
 
     bool have_room_with_this_specifications(int type, int quantity, int check_in, int check_out) const;
 
@@ -65,9 +72,7 @@ private:
     template<class room>
     void construct_rooms(v_room& rooms, int quantity, float price);
 
-    info_t get_num_of_rooms();
-    info_t get_rooms_price();
-    info_t booked_out(User* user, int type, int quantity, int check_in, int check_out);
+    v_room booked_out(User* user, int type, int quantity, int check_in, int check_out);
 
     float calculate_avg_price(const HotelInfo& info);
 
