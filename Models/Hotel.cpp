@@ -161,6 +161,8 @@ float Database::Hotel::calculate_avg_price(const HotelInfo& info)
             q++;
         }
     }
+    if(q == 0)
+        return 0.0f;
     return sum/q;
 }
 

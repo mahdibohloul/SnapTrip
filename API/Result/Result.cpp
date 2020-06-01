@@ -61,7 +61,14 @@ API::Result::Result(Database::Hotel::RatingInfo avg_ratings)
     construct_map();
 }
 
-API::Result::~Result() {}
+API::Result::~Result()
+{
+    comments.clear();
+    hotels.clear();
+    reservations.clear();
+    transactions.clear();
+    booked_rooms.clear();
+}
 
 string API::Result::get_result()
 {
@@ -137,7 +144,7 @@ string API::Result::get_hotels_info()
     string delim;
     for(auto hotel : hotels)
     {
-        os << delim << hotel->to_string();
+        os << delim << hotel->to_string() << ConstNames::Space;
         delim = ConstNames::New_Line;
     }
     return os.str() + ConstNames::New_Line;
