@@ -1,7 +1,7 @@
 # SnapTrip
 SnapTrip, the final project of the Advanced Programming course, in phase 1, my focus is on the proper implementation of the database and creating the right API.
 
-## Sections
+## Layers
 
 > User-Interface
 
@@ -33,12 +33,16 @@ Why did I consider the **API** layer for my project? The answer is that on **Sna
 ### Result-Class
 The **Result** class is in the **API** layer, and after all the steps in the **Business-Logic** layer and the **ORM** layer, the **API** calls the class to take the result and prepare them for the interface.
 
-## ORM
-**ORM** stands for **object-relational-mapping** and in charge to simplify data for Database. **ORM** has directly in touch with the database, it means that if every part of the program wants to do anything with the data, then they have to pass data through the **ORM**
+## Business-Logic
+This **SnapTrip** engine and all the logic and program steps and all the functions work in this section.
+Each command is sent to this layer via the **API**, and here, the command is analyzed, and if there is an error in it, *Exceptions* are returned, otherwise, the commands are transferred to the next layer, **ORM**.
 
+## ORM
+**ORM** stands for **Object Relational Mapping** and is responsible for creating *relational models* and *tables* using input information.
+**ORM** is in direct contact with the *database*, which means that if any part of the program wants to do something with the data, it must transfer the data via *ORM*.
 
 ## Commands
-##### the order of the commands-order doesn't matter
+###### the order of the commands-order doesn't matter
 
 - Make executable file
 ```bash
@@ -82,15 +86,20 @@ GET hotels ? id <id>
     ```bash
     POST filters ? city <city>
     ```
-    - This filter only approved hotels whose stars are specified in the range (in the interval [min, max]) (at least: 1 and at most: 5)
+    - This filter only approved hotels whose stars are specified in the range (in the interval [min, max])
+        - at least: 1 and at most: 5
     ```bash
     POST filters ? min_star <min_star> max_star <max_star>
     ```
-    - This filter only approved hotels whose average price are specified in the range (in the interval [min, max])
+    - This filter only approved hotels whose average price are specified in the range
+        - in the interval [min, max]
     ```bash
     POST filters ? min_price <min_price> max_price <max_price>
     ```
-    - This filter only approved hotels whose have specific rooms in the specified range (in the interval [min, max]) (room type are: standard, deluxe, luxury, premium) (check_in at least: 1 night, check_out at most: 30 night)
+    - This filter only approved hotels whose have specific rooms in the specified range
+        - room type are: standard, deluxe, luxury, premium
+        - in the interval [min, max]
+        - check_in at least: 1 night, check_out at most: 30 night
     ```bash
     POST filters ? type <room_type> qunatity <quantity> check_in <check_in> check_out <check_out>
     ```
