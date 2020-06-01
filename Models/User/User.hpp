@@ -83,6 +83,8 @@ private:
     void add_reserve_case(Hotel* hotel, Hotel::v_room& b_rooms, int check_in, int check_out, float price);
     void pay_cost(float cost);
     void delete_from_reserves(ReserveCase* reserve);
+    void clean_filters_up();
+    void clean_reservations_up();
 
     ReserveCase* query_in_reserves(int id);
 

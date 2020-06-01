@@ -31,7 +31,10 @@ Backend::Backend()
     construct_maps();
 }
 
-Backend::~Backend() {}
+Backend::~Backend()
+{
+    online_users.clear();
+}
 
 
 Backend::data_t Backend::parse_content(Content content, char separator)

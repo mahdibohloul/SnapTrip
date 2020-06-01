@@ -87,6 +87,9 @@ public:
 
 private:
     bool check_info(User* current_user, UserInfo user_info);
+    void clean_users_up();
+    void clean_hotels_up();
+    void clean_comments_up();
 
 private:
     l_users users;

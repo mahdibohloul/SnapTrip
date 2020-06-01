@@ -21,7 +21,11 @@ API::API()
     backend = Backend::get_instance();
 }
 
-API::~API() {}
+API::~API()
+{
+    ObjectRelational::release();
+    Backend::release();
+}
 
 void API::database_setup(Backend::data_t data)
 {

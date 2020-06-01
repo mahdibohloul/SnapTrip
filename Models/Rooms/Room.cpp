@@ -16,7 +16,10 @@ Database::Hotel::Room::Room(std::string id, enum Room_Class type, float price)
     this->reserves = v_reserve();
 }
 
-Database::Hotel::Room::~Room() {}
+Database::Hotel::Room::~Room()
+{
+    reserves.clear();
+}
 
 
 void Database::Hotel::Room::reset_room_id(v_room &rooms)

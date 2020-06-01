@@ -25,7 +25,10 @@ UserInterface::UserInterface()
     api = API::get_instance();
 }
 
-UserInterface::~UserInterface() {}
+UserInterface::~UserInterface()
+{
+    API::release();
+}
 
 
 void UserInterface::database_setup(Content file_name)

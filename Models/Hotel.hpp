@@ -72,6 +72,9 @@ private:
     float calculate_avg_price(const HotelInfo& info);
 
     RatingInfo calculate_avg_ratings();
+
+    void clean_rooms_up();
+    void clean_ratings_up();
 private:
     t_id id;
     info_t property_name;

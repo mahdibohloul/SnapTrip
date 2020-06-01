@@ -9,4 +9,5 @@ int main(int argc, char const *argv[])
     UserInterface* user_interface = UserInterface::get_instance();
     user_interface->database_setup(file_name);
     user_interface->process();
+    UserInterface::release();
 }

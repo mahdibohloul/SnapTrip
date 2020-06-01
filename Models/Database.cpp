@@ -39,7 +39,12 @@ Database::Database()
     comments = l_comments();
 }
 
-Database::~Database() {}
+Database::~Database()
+{
+    clean_users_up();
+    clean_hotels_up();
+    clean_comments_up();
+}
 
 void Database::hotel_setup(const HotelInfo& hotel_info)
 {
@@ -171,4 +176,34 @@ Database::l_comments Database::get_comment(std::string hotel_id)
             get_comment.push_back(*comment_itr);
     }
     return get_comment;
+}
+
+void Database::clean_users_up()
+{
+    for(auto user_itr = users.begin(); user_itr != users.end(); user_itr++)
+    {
+        delete *user_itr;
+        *user_itr = nullptr;
+    }
+    users.clear();
+}
+
+void Database::clean_hotels_up()
+{
+    for(auto hotel_itr = hotels.begin(); hotel_itr != hotels.end(); hotel_itr++)
+    {
+        delete *hotel_itr;
+        *hotel_itr = nullptr;
+    }
+    hotels.clear();
+}
+
+void Database::clean_comments_up()
+{
+    for(auto comment_itr = comments.begin(); comment_itr != comments.end(); comment_itr++)
+    {
+        delete *comment_itr;
+        *comment_itr = nullptr;
+    }
+    comments.clear();
 }

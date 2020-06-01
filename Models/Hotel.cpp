@@ -40,6 +40,12 @@ Database::Hotel::Hotel(const Database::HotelInfo& info) : geo_coordinates(Coordi
     avg_price = calculate_avg_price(info);
 }
 
+Database::Hotel::~Hotel()
+{
+    clean_rooms_up();
+    clean_ratings_up();
+}
+
 info_t Database::Hotel::to_string()
 {
     ostringstream os;
@@ -245,3 +251,23 @@ info_t Database::Hotel::get_num_of_rooms()
 info_t Database::Hotel::get_city() const { return city; }
 
 int Database::Hotel::get_star() const { return hotel_star_rating; }
+
+void Database::Hotel::clean_rooms_up()
+{
+    for(auto room_itr = rooms.begin(); room_itr != rooms.end(); room_itr++)
+    {
+        delete *room_itr;
+        *room_itr = nullptr;
+    }
+    rooms.clear();
+}
+
+void Database::Hotel::clean_ratings_up()
+{
+    for(auto rating_itr = map_ratings.begin(); rating_itr != map_ratings.end(); rating_itr++)
+    {
+        delete (*rating_itr).second;
+        (*rating_itr).second = nullptr;
+    }
+    map_ratings.clear();
+}

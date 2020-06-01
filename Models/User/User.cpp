@@ -48,6 +48,12 @@ Database::User::User(const UserInfo& info)
     this->id_reserve_list = list<int>();
 }
 
+Database::User::~User()
+{
+    clean_filters_up();
+    clean_reservations_up();
+}
+
 void Database::User::deposit(float amount)
 {
     wallet.amount += amount;
@@ -200,4 +206,24 @@ void Database::User::sort_hotels(Database::l_hotels &hotels)
     {
         return h1->id < h2->id;
     });
+}
+
+void Database::User::clean_filters_up()
+{
+    for(auto filter_itr = filters.begin(); filter_itr != filters.end(); filter_itr++)
+    {
+        delete (*filter_itr).second;
+        (*filter_itr).second = nullptr;
+    }
+    filters.clear();
+}
+
+void Database::User::clean_reservations_up()
+{
+    for(auto book_itr = booked_rooms.begin(); book_itr != booked_rooms.end(); book_itr++)
+    {
+        delete *book_itr;
+        *book_itr = nullptr;
+    }
+    booked_rooms.clear();
 }
