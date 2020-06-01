@@ -88,6 +88,7 @@ private:
 
     void set_filters(const Database::User::FilterInfo& filter_info);
     void construct_maps();
+    void check_question_mark(data_t& data);
 
     template<class T>
     hash_t hashing(T raw);

@@ -111,10 +111,7 @@ Content Backend::signup(data_t data)
 {
     if(!data.empty())
     {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
-        data.erase(command_itr);
+        check_question_mark(data);
         Database::UserInfo user_info = fill_user_info(data, ConstNames::Signup_Order);
         if(has_permission_to_signup(user_info) == ConstNames::Permissible)
             return ConstNames::OK_msg;
@@ -126,10 +123,7 @@ Content Backend::login(data_t data)
 {
     if(!data.empty())
     {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
-        data.erase(command_itr);
+        check_question_mark(data);
         Database::UserInfo user_info = fill_user_info(data, ConstNames::Login_Order);
         if(has_permission_to_login(user_info) == ConstNames::Permissible)
             return ConstNames::OK_msg;
@@ -141,14 +135,11 @@ Content Backend::logout(data_t data)
 {
     if(data.empty())
     {
-        if(!online_users.empty())
-        {
-            object_relational->logout_user(*online_users.begin());
-            online_users.clear();
-            return ConstNames::OK_msg;
-        }
-        else
+        if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
+        object_relational->logout_user(*online_users.begin());
+        online_users.clear();
+        return ConstNames::OK_msg;
     }
     throw Exception(ConstNames::Bad_Request_msg);
 }
@@ -157,10 +148,7 @@ Content Backend::wallet_post(data_t data)
 {
     if(!data.empty())
     {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
-        data.erase(command_itr);
+        check_question_mark(data);
         Database::UserInfo user_info = fill_user_info(data, ConstNames::POST_Wallet_Order);
         if(has_permission_to_deposit(user_info) == ConstNames::Permissible)
             return ConstNames::OK_msg;
@@ -172,12 +160,9 @@ Content Backend::post_reserve(data_t data)
 {
     if(!data.empty())
     {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
+        check_question_mark(data);
         if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
-        data.erase(command_itr);
         Database::User::ReserveInfo reserve_info = fill_reserve_info(data);
         return booked_out(reserve_info);
     }
@@ -188,12 +173,9 @@ Content Backend::post_comment(data_t data)
 {
     if(!data.empty())
     {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
+        check_question_mark(data);
         if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
-        data.erase(command_itr);
         string hotel_id = find_info(ConstNames::Hotel, data);
         string comment = find_info(ConstNames::Comment, data);
         object_relational->post_comment(*online_users.begin(), hotel_id, comment);
@@ -206,12 +188,9 @@ Content Backend::post_rating(data_t data)
 {
     if(!data.empty())
     {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
+        check_question_mark(data);
         if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
-        data.erase(command_itr);
         auto rating_info = fill_rating_info(data);
         object_relational->post_rating(rating_info);
         return ConstNames::OK_msg;
@@ -223,12 +202,9 @@ Content Backend::post_filter(data_t data)
 {
     if(!data.empty())
     {
+        check_question_mark(data);
         if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
-        data.erase(command_itr);
         Database::User::FilterInfo filter_info = fill_filter_info(data);
         set_filters(filter_info);
         return ConstNames::OK_msg;
@@ -241,10 +217,9 @@ Content Backend::wallet_get(data_t data)
 {
     if(!data.empty())
     {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
-        data.erase(command_itr);
+        check_question_mark(data);
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
         Database::UserInfo user_info = fill_user_info(data, ConstNames::GET_Wallet_Order);
         return check_account(user_info);
     }
@@ -267,12 +242,9 @@ Content Backend::get_full_hotel(data_t data)
 {
     if(!data.empty())
     {
+        check_question_mark(data);
         if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
-        data.erase(command_itr);
         info_t hotel_id = find_info(ConstNames::ID, data);
         return get_hotels_info(hotel_id);
     }
@@ -291,10 +263,7 @@ Content Backend::get_comment(data_t data)
 {
    if(!data.empty())
    {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
-        data.erase(command_itr);
+        check_question_mark(data);
         if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
         string hotel_id = find_info(ConstNames::Hotel, data);
@@ -307,10 +276,7 @@ Content Backend::get_rating(data_t data)
 {
   if(!data.empty())
   {
-        auto command_itr = data.begin();
-        if(*command_itr != ConstNames::Question_Mark)
-            throw Exception(ConstNames::Bad_Request_msg);
-        data.erase(command_itr);
+        check_question_mark(data);
         if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
         string hotel_id = find_info(ConstNames::Hotel, data);
@@ -337,6 +303,7 @@ Content Backend::delete_reserve(data_t data)
 {
     if(!data.empty())
     {
+        check_question_mark(data);
         if(request_from_online_user() != ConstNames::Exist)
             throw Exception(ConstNames::Permission_Denied_msg);
         string str_id = find_info(ConstNames::ID, data);
@@ -692,4 +659,12 @@ void Backend::construct_maps()
     func_get_map.insert(make_pair(ConstNames::Rating_Order, &Backend::get_rating));
     func_delete_map.insert(make_pair(ConstNames::Filter_Order, &Backend::delete_filter));
     func_delete_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::delete_reserve));
+}
+
+void Backend::check_question_mark(data_t& data)
+{
+    auto command_itr = data.begin();
+    if(*command_itr != ConstNames::Question_Mark)
+        throw Exception(ConstNames::Bad_Request_msg);
+    data.erase(command_itr);
 }
