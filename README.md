@@ -25,6 +25,13 @@ It is the part that you can see what SnapTrip does and you don't have to worry a
 But in this phase of SnapTrip (phase 1), the User-Interface doesn't have a big role in the game and as I mentioned before, in this phase we want to implement a good API and make sure of the Backend part to does everything right.
 You can use those order in the [Commands](#commands) part in the terminal to see the performance of SnapTrip.
 
+## API
+**API** is the connection between the **User-Interface** and **ORM** and **Backend**. The **API** receives the entered commands and transfers them to the **Business-Logic** layer. After all the steps, it takes the results and stores them in the [Result](#result-class) class, which I'll talk about that later.
+
+Why did I consider the **API** layer for my project? The answer is that on **SnapTrip**, we may have a lot of clients or want to run **SnapTrip** in different environments. We can't plan for all different environments, so the **API** takes the raw output information and the [Result](#result-class) class gets the result to provide the information depending on our environment.
+
+### Result-Class
+The **Result** class is in the **API** layer, and after all the steps in the **Business-Logic** layer and the **ORM** layer, the **API** calls the class to take the result and prepare them for the interface.
 
 ## ORM
 **ORM** stands for **object-relational-mapping** and in charge to simplify data for Database. **ORM** has directly in touch with the database, it means that if every part of the program wants to do anything with the data, then they have to pass data through the **ORM**
@@ -95,7 +102,7 @@ DELETE filters
 ```bash
 POST reserves ? hotel <hotel_id> type <room_type> quantity <quantity> check_in <check_in> check_out <check_out>
 ```
-- See the information on your bookings
+- View the information on your bookings
 ```bash
 GET reserves
 ```
@@ -103,4 +110,26 @@ GET reserves
 ```bash
 DELETE reserves ? id <reservation_id>
 ```
+- Enter a hotel's id and post a comment for that hotel
+```bash
+POST comments ? hotel <hotel_id> comment <comment>
+```
+- Hotels can be graded in 6 ways
+    - location, cleanliness, staff, facilities, value_for_money, overall_rating
+    - Points must be a number from 1 to 5
+    - If a user points to a hotel twice, new points will be replaced
+```bash
+POST ratings ? hotel <hotel_id> location <location> cleanliness <cleanliness> staff <staff> facilities <facilities> value_for_money <value_for_money> overall_rating <overall_rating>
+```
+- View the comments on a hotel, just enter hotel id
+    - The first comment is the newest comment
+```bash
+GET comments ? hotel <hotel_id>
+```
+- View the average score of a hotel
+```bash
+GET ratings ? hotel <hotel_id>
+```
+
+
 
