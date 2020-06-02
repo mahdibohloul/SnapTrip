@@ -21,12 +21,12 @@ SnapTrip, the final project of the Advanced Programming course, in phase 1, my f
 >>>> Room
 
 ## User-Interface
-It is the part that you can see what SnapTrip does and you don't have to worry about what happens in the backward
-But in this phase of SnapTrip (phase 1), the User-Interface doesn't have a big role in the game and as I mentioned before, in this phase we want to implement a good API and make sure of the Backend part to does everything right.
-You can use those order in the [Commands](#commands) part in the terminal to see the performance of SnapTrip.
+It is the part that you can see what SnapTrip does and you don't have to worry about what happens in the backend,
+but in this phase of SnapTrip (phase 1), the User-Interface doesn't have a big role in the game and as I mentioned before, in this phase we want to implement a good API and make sure the Backend part does everything right.
+You can use the orders in the [Commands](#commands) part in the terminal to see the performance of SnapTrip.
 
 ## API
-**API** is the connection between the **User-Interface** and **ORM** and **Backend**. The **API** receives the entered commands and transfers them to the **Business-Logic** layer. After all the steps, it takes the results and stores them in the [Result](#result-class) class, which I'll talk about that later.
+**API** is the connection between the **User-Interface**, **ORM** and **Backend**. The **API** receives the entered commands and transfers them to the **Business-Logic** layer. After all the steps, it takes the results and stores them in the [Result](#result-class) class, which I'll talk about later.
 
 Why did I consider the **API** layer for my project? The answer is that on **SnapTrip**, we may have a lot of clients or want to run **SnapTrip** in different environments. We can't plan for all different environments, so the **API** takes the raw output information and the [Result](#result-class) class gets the result to provide the information depending on our environment.
 
@@ -39,7 +39,7 @@ Each command is sent to this layer via the **API**, and here, the command is ana
 
 ## ORM
 **ORM** stands for **Object Relational Mapping** and is responsible for creating *relational models* and *tables* using input information.
-**ORM** is in direct contact with the *database*, which means that if any part of the program wants to do something with the data, it must transfer the data via *ORM*.
+**ORM** is in direct contact with *database*, which means that if any part of the program wants to do something with the data, it must transfer the data via *ORM*.
 
 ## Commands
 ###### the order of the commands-order doesn't matter
@@ -73,7 +73,7 @@ POST wallet ? amount <amount>
 ```bash
 GET wallet ? count <count>
 ```
-- See all of the hotels. if you added some filters, first applies the filters and then shows you the filtered hotels
+- See all of the hotels. if you add some filters, first applies the filters and then shows you the filtered hotels
 ```bash
 GET hotels
 ```
