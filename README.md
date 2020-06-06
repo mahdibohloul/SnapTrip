@@ -42,7 +42,7 @@ Each command is sent to this layer via the **API**, and here, the command is ana
 **ORM** is in direct contact with *database*, which means that if any part of the program wants to do something with the data, it must transfer the data via *ORM*.
 
 ## Commands
-**the order of the commands-order doesn't matter
+** the order of the commands-order doesn't matter
 
 - Make executable file
 ```bash
