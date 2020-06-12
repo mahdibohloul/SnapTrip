@@ -35,6 +35,8 @@ public:
     data_t parse_content(Content content, char separator);
     void command_processor(data_t command_data);
 
+    Database::User* get_curr_user();
+
 private:
     Backend();
     void post_request(data_t data);
@@ -45,6 +47,7 @@ private:
     void logout(data_t data);
     void wallet_post(data_t data);
     void post_filter(data_t data);
+    void post_default_price_filter(data_t data);
     void post_reserve(data_t data);
     void post_comment(data_t data);
     void post_rating(data_t data);
@@ -61,6 +64,7 @@ private:
     void get_hotels_info();
     void get_hotels_info(info_t hotel_id);
     void set_filters(const Database::User::FilterInfo& filter_info);
+    void set_filters(const bool activation_mode);
     void construct_maps();
     void check_question_mark(data_t& data);
     void responding(std::string message);
@@ -80,6 +84,7 @@ private:
     bool valid_advanced_filter(std::string type, std::string quantity, std::string check_in, std::string check_out);
     bool valid_advanced_filter_type(std::string type);
     bool valid_rating_info(std::string hotel_id, std::string location, std::string cleanliness, std::string staff, std::string facilities, std::string value_for_money, std::string overall_rating);
+    bool fill_default_filter_info(const data_t& data);
     template <class T> bool in_range(T value, T min, T max);
 
     Content find_info(const std::string& mode, const data_t& data);

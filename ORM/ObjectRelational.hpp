@@ -1,7 +1,6 @@
 #ifndef _OBJECTRELATIONAL_H
 #define _OBJECTRELATIONAL_H
 
-#include "../Models/Database.hpp"
 #include "../Business-Logic/Backend.hpp"
 
 enum Data_Enum
@@ -35,6 +34,7 @@ public:
     void database_setup(Backend::data_t data);
     void deposit_in(const Database::UserInfo& user_info, Database::User* user);
     void set_filter(const Database::User::FilterInfo& filter_info, Database::User* user);
+    void set_filter(const bool activation_mode, Database::User* user);
     void delete_filter(Database::User* user);
     void post_comment(Database::User* user, std::string hotel_id, std::string comment);
     void logout_user(Database::User* user);

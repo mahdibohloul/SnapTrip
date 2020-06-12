@@ -9,6 +9,7 @@ public:
     friend class Database;
     enum FilterMode
     {
+        DefaultAvgPrice,
         City,
         StarRange,
         AvgPrice,
@@ -62,10 +63,13 @@ public:
     ~User();
 
     void set_filters(const FilterInfo& filter_info);
+    void set_default_filter(const bool activation_mode);
     void delete_filter();
+    void deactivate_default_filter();
     void delete_reserve(int id);
 
     bool can_pay(float cost);
+    bool the_default_filter_applied();
 
 private:
     User(const UserInfo& info);
@@ -76,8 +80,9 @@ private:
     Database::l_hotels get_filtered_hotels(Database::l_hotels& hotels, m_filter::iterator& map_itr);
 
     void sort_hotels(Database::l_hotels& hotels);
+    void apply_default_filter(Database::l_hotels& hotels);
     void deposit(float amount);
-    void set_filter(const FilterInfo& filter_info);
+    void set_filters(const enum FilterMode mode);
     void add_reserve_case(Hotel* hotel, Hotel::v_room& b_rooms, int check_in, int check_out, float price);
     void pay_cost(float cost);
     void delete_from_reserves(ReserveCase* reserve);
@@ -87,6 +92,8 @@ private:
     ReserveCase* query_in_reserves(int id);
 
     l_booked get_reserve();
+
+    bool could_apply_default_filter();
 
 private:
     info_t id;

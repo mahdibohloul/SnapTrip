@@ -2,7 +2,6 @@
 #define _API_H
 
 #include "../ORM/ObjectRelational.hpp"
-#include "../Business-Logic/Backend.hpp"
 
 class API
 {
@@ -16,10 +15,7 @@ public:
     void database_setup(Backend::data_t data);
     Backend::data_t parse_content(Content content, char separator);
     void command_processor(Backend::data_t command_data);
-
-    template<class T>
-    void responding(T response);
-
+    template<class T> void responding(T response);
     std::string get_response();
 
 private:

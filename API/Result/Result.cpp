@@ -140,14 +140,28 @@ string API::Result::get_hotel_full_info()
 
 string API::Result::get_hotels_info()
 {
+
     ostringstream os;
     string delim;
+    os << get_extra_info();
     for(auto hotel : hotels)
     {
         os << delim << hotel->to_string() << ConstNames::Space;
         delim = ConstNames::New_Line;
     }
     return os.str() + ConstNames::New_Line;
+}
+
+string API::Result::get_extra_info()
+{
+    ostringstream os;
+    auto backend = Backend::get_instance();
+    auto user = backend->get_curr_user();
+    if(user->the_default_filter_applied())
+    {
+        os << ConstNames::Default_Filter_msg << endl;
+    }
+    return os.str();
 }
 
 string API::Result::get_comments_info()

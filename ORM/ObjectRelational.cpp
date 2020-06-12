@@ -109,6 +109,11 @@ void ObjectRelational::set_filter(const Database::User::FilterInfo &filter_info,
     user->set_filters(filter_info);
 }
 
+void ObjectRelational::set_filter(const bool activation_mode, Database::User *user)
+{
+    user->set_default_filter(activation_mode);
+}
+
 void ObjectRelational::delete_filter(Database::User *user)
 {
     user->delete_filter();

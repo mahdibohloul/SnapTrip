@@ -7,6 +7,7 @@
 #include "../Filters/AvgPriceFilter.hpp"
 #include "../Filters/StarRangeFilter.hpp"
 #include "../Filters/AdvancedFilter.hpp"
+#include "../Filters/DefaultAvgPriceFilter.hpp"
 #include "../../Exception/Exception.hpp"
 using namespace std;
 
@@ -75,11 +76,24 @@ Database::User::l_transactions Database::User::get_account_information(int num_t
 Database::l_hotels Database::User::get_hotels(Database::l_hotels& hotels)
 {
     sort_hotels(hotels);
+    if(could_apply_default_filter())
+        apply_default_filter(hotels);
     if(filters.empty())
         return hotels;
     else{
         auto filter_itr = filters.begin();
         return get_filtered_hotels(hotels, filter_itr);
+    }
+}
+
+void Database::User::apply_default_filter(Database::l_hotels& hotels)
+{
+    set_filters(FilterMode::DefaultAvgPrice);
+    auto default_filter = filters[FilterMode::DefaultAvgPrice];
+    if(default_filter->get_activity_status() == ConstNames::Active_Mode){
+        default_filter->reset_filter();
+        default_filter->filter(hotels);
+        hotels = default_filter->get_hotels();
     }
 }
 
@@ -95,6 +109,37 @@ void Database::User::set_filters(const FilterInfo &filter_info)
         filters[FilterMode::Advanced] = new AdvancedFilter(filter_info);
 }
 
+void Database::User::set_filters(const enum FilterMode mode)
+{
+    auto default_filter = filters.find(FilterMode::DefaultAvgPrice);
+    if(default_filter == filters.end())
+        filters[mode] = new DefaultAvgPriceFilter(booked_rooms);
+    else
+    {
+        if(((*default_filter).second)->get_activity_status() == ConstNames::Active_Mode)
+        {
+            filters.erase(default_filter);
+            filters[mode] = new DefaultAvgPriceFilter(booked_rooms);
+        }
+    }
+}
+
+void Database::User::set_default_filter(const bool activation_mode)
+{
+    if(activation_mode && could_apply_default_filter())
+        set_filters(FilterMode::DefaultAvgPrice);
+    else
+        deactivate_default_filter();
+
+}
+
+void Database::User::deactivate_default_filter()
+{
+    auto default_filter = filters.find(FilterMode::DefaultAvgPrice);
+    if(default_filter != filters.end())
+        ((*default_filter).second)->deactivate();
+}
+
 Database::l_hotels Database::User::get_filtered_hotels(Database::l_hotels& hotels, m_filter::iterator& map_itr)
 {
     if(map_itr == filters.end()){
@@ -104,9 +149,19 @@ Database::l_hotels Database::User::get_filtered_hotels(Database::l_hotels& hotel
     }
     ((*map_itr).second)->reset_filter();
     ((*map_itr).second)->filter(hotels);
-    Database::l_hotels new_hotels = ((*map_itr).second)->get_hotels();
+    auto new_hotels = ((*map_itr).second)->get_hotels();
     map_itr++;
     return get_filtered_hotels(new_hotels, map_itr);
+}
+
+bool Database::User::could_apply_default_filter()
+{
+    auto avg_filter = filters.find(FilterMode::AvgPrice);
+    if(avg_filter != filters.end())
+        return false;
+    if(booked_rooms.size() < ConstNames::Minimum_Reservation_Count)
+        return false;
+    return true;
 }
 
 void Database::User::delete_filter()
@@ -205,3 +260,5 @@ void Database::User::clean_reservations_up()
     }
     booked_rooms.clear();
 }
+
+bool Database::User::the_default_filter_applied() { return filters[FilterMode::DefaultAvgPrice]->get_activity_status(); }
