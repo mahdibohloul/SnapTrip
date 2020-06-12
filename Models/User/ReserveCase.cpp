@@ -44,3 +44,5 @@ float Database::User::ReserveCase::get_cost_of_reserves() { return cost; }
 pair<int, int> Database::User::ReserveCase::get_reserved_days() { return make_pair(check_in, check_out); }
 
 string Database::User::ReserveCase::get_type_of_reserved_rooms() { return Database::Hotel::Room::room_string[rooms[0]->type]; }
+
+int Database::User::ReserveCase::get_residency_period() { return check_out - check_in; }

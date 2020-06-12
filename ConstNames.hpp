@@ -9,6 +9,8 @@ namespace ConstNames
     const bool Exist = true;
     const bool Permissible = true;
     const bool Equal = true;
+    const bool Active_Mode = true;
+    const bool Inactive_Mode = false;
 
     const int First_Room_Id = 1;
     const int First_Reserve_Id = 1;
@@ -23,10 +25,12 @@ namespace ConstNames
     const int Maximum_Hotel_Star = 5;
     const int Minimum_Hotel_Reserve = 1;
     const int Maximum_Hotel_Reserve = 30;
+    const int Default_Filter_Coefficient = 2;
     const int Default_Star = 0;
     const int Default_Quantity = -1;
     const int Default_Price = -1;
     const int Default_Reservation = 0;
+    const int Minimum_Reservation_Count = 10;
     const float Minimum_Deposit_Amount = 0.0f;
     const float Min_Rate = 1.0;
     const float Max_Rate = 5.0;
@@ -59,6 +63,7 @@ namespace ConstNames
     const std::string No_Rating_msg = "No Rating";
     const std::string Empty_msg = "Empty";
     const std::string OK_msg = "OK";
+    const std::string Default_Filter_msg = "* Results have been filtered by the default price filter.";
 
     const std::string Signup_Order = "signup";
     const std::string Login_Order = "login";
@@ -66,6 +71,7 @@ namespace ConstNames
     const std::string Wallet_Order = "wallet";
     const std::string Get_Hotels_Order = "hotels";
     const std::string Filter_Order = "filters";
+    const std::string Default_Price_Filter_Order = "default_price_filter";
     const std::string Reserve_Order = "reserves";
     const std::string Comment_Order = "comments";
     const std::string Rating_Order = "ratings";
@@ -112,6 +118,9 @@ namespace ConstNames
     const std::string Staff = "staff";
     const std::string Value_For_Money_sep = "value for money";
     const std::string Overall_Rating_sep = "overall rating";
+    const std::string Active = "active";
+    const std::string True = "true";
+    const std::string False = "false";
 }
 
 #endif

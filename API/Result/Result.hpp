@@ -44,6 +44,7 @@ private:
     std::string get_hotels_info();
     std::string get_comments_info();
     std::string get_average_ratings();
+    std::string get_extra_info();
 
 private:
     std::string result_msg;

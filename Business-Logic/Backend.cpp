@@ -226,6 +226,21 @@ void Backend::post_filter(data_t data)
         throw Exception(ConstNames::Bad_Request_msg);
 }
 
+void Backend::post_default_price_filter(data_t data)
+{
+    if(!data.empty())
+    {
+        check_question_mark(data);
+        if(request_from_online_user() != ConstNames::Exist)
+            throw Exception(ConstNames::Permission_Denied_msg);
+        auto activation_mode = fill_default_filter_info(data);
+        set_filters(activation_mode);
+        responding(ConstNames::OK_msg);
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
+}
+
 void Backend::wallet_get(data_t data)
 {
     if(!data.empty())
@@ -510,6 +525,17 @@ Database::Hotel::RatingInfo Backend::fill_rating_info(const data_t& data)
     throw Exception(ConstNames::Bad_Request_msg);
 }
 
+bool Backend::fill_default_filter_info(const data_t& data)
+{
+    if(!data.empty())
+    {
+        string activation_mode = find_info(ConstNames::Active, data);
+        return (activation_mode == ConstNames::True) ? true : (activation_mode == ConstNames::False) ? false : throw Exception(ConstNames::Bad_Request_msg);
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
+}
+
 bool Backend::valid_rating_info(std::string hotel_id, std::string location, std::string cleanliness, std::string staff, std::string facilities, std::string value_for_money, std::string overall_rating)
 {
     if(hotel_id != ConstNames::Empty_Str && location != ConstNames::Empty_Str && cleanliness != ConstNames::Empty_Str && staff != ConstNames::Empty_Str && facilities != ConstNames::Empty_Str && value_for_money != ConstNames::Empty_Str && overall_rating != ConstNames::Empty_Str)
@@ -649,6 +675,11 @@ void Backend::set_filters(const Database::User::FilterInfo& filter_info)
     object_relational->set_filter(filter_info, *online_users.begin());
 }
 
+void Backend::set_filters(const bool activation_mode)
+{
+    object_relational->set_filter(activation_mode, *online_users.begin());
+}
+
 void Backend::booked_out(Database::User::ReserveInfo& reserve_info)
 {
     object_relational->booked_out(reserve_info, *online_users.begin());
@@ -667,6 +698,7 @@ void Backend::construct_maps()
     func_post_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::post_reserve));
     func_post_map.insert(make_pair(ConstNames::Comment_Order, &Backend::post_comment));
     func_post_map.insert(make_pair(ConstNames::Rating_Order, &Backend::post_rating));
+    func_post_map.insert(make_pair(ConstNames::Default_Price_Filter_Order, &Backend::post_default_price_filter));
     func_get_map.insert(make_pair(ConstNames::Wallet_Order, &Backend::wallet_get));
     func_get_map.insert(make_pair(ConstNames::Get_Hotels_Order, &Backend::get_full_hotel));
     func_get_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::get_reserve));
@@ -697,3 +729,5 @@ void Backend::responding(string message)
     auto api = API::get_instance();
     api->responding(message);
 }
+
+Database::User* Backend::get_curr_user() { return *online_users.begin(); }

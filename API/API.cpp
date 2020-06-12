@@ -44,13 +44,12 @@ void API::command_processor(Backend::data_t command_data)
     backend->command_processor(command_data);
 }
 
-
 template<class T>
 void API::responding(T response)
 {
-    if(instance->result != nullptr)
-        delete instance->result;
-    instance->result = new Result(response);
+    if(result != nullptr)
+        delete result;
+    result = new Result(response);
 }
 
 string API::get_response()

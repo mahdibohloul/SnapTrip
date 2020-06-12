@@ -17,6 +17,7 @@ public:
     std::string get_hotel_reserved_id();
     int get_quantity_of_reserves();
     float get_cost_of_reserves();
+    int get_residency_period();
     std::pair<int,int> get_reserved_days();
     std::string get_type_of_reserved_rooms();
 
