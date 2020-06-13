@@ -14,6 +14,18 @@ class Database::Hotel
 {
 public:
     friend class Database;
+    enum SortProperty
+    {
+        SP_Id,
+        SP_Name,
+        SP_Star_Rating,
+        SP_City,
+        SP_StandardRoomPrice,
+        SP_DeluxeRoomPrice,
+        SP_LuxuryRoomPrice,
+        SP_PremiumRoomPrice,
+        SP_AvgRoomPrice
+    };
     struct Coordinates
     {
         float longitude;
@@ -40,7 +52,7 @@ public:
 public:
     ~Hotel();
 
-    info_t to_string();
+    info_t to_string() const;
     info_t get_city() const;
     info_t get_id();
     info_t get_name();
@@ -57,6 +69,7 @@ public:
     float get_avg_price() const;
 
     int get_star() const;
+    int comparator(enum SortProperty property, const Hotel* right_side) const;
 
     void post_rating(RatingInfo& rating_info);
 
@@ -69,6 +82,9 @@ private:
 
     bool in_range(Room* room, int check_in, int check_out, int type) const;
 
+    template<typename T>
+    static int comparator(const T& left_side, const T& right_side);
+
     template<class room>
     void construct_rooms(v_room& rooms, int quantity, float price);
 
@@ -80,6 +96,8 @@ private:
 
     void clean_rooms_up();
     void clean_ratings_up();
+
+    std::map<int, float> get_map_of_rooms_price() const;
 private:
     t_id id;
     info_t property_name;

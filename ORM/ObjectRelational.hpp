@@ -50,6 +50,7 @@ public:
     void get_comment(std::string hotel_id);
     void get_rating(std::string hotel_id);
     void delete_reserve(Database::User* user, int id);
+    void set_sort_info(const Database::User::SortInfo& sort_info, Database::User* user);
 
     Database::User* get_specific_user(Database::UserInfo user_info, const std::string& mode);
 

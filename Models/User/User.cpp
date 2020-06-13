@@ -29,6 +29,23 @@ Database::User::FilterInfo::FilterInfo()
     type = Hotel::Room::Room_Class::None;
 }
 
+Database::User::SortInfo::SortInfo()
+{
+    map_sort_property = {
+        make_pair(ConstNames::ID, Hotel::SortProperty::SP_Id),
+        make_pair(ConstNames::Star_Rating, Hotel::SortProperty::SP_Star_Rating),
+        make_pair(ConstNames::Name, Hotel::SortProperty::SP_Name),
+        make_pair(ConstNames::City, Hotel::SortProperty::SP_City),
+        make_pair(ConstNames::Standard_Room_Price, Hotel::SortProperty::SP_StandardRoomPrice),
+        make_pair(ConstNames::Deluxe_Room_Price, Hotel::SortProperty::SP_DeluxeRoomPrice),
+        make_pair(ConstNames::Luxury_Room_Price, Hotel::SortProperty::SP_LuxuryRoomPrice),
+        make_pair(ConstNames::Premium_Room_Price, Hotel::SortProperty::SP_PremiumRoomPrice),
+        make_pair(ConstNames::Average_Room_Price, Hotel::SortProperty::SP_AvgRoomPrice)
+    };
+    property = Hotel::SortProperty::SP_Id;
+    mode = SortMode::SM_Ascending;
+}
+
 Database::User::ReserveInfo::ReserveInfo()
 {
     m_room_type.insert(make_pair(ConstNames::StandardRoom, Hotel::Room::Room_Class::Standard));
@@ -47,6 +64,7 @@ Database::User::User(const UserInfo& info)
     this->booked_rooms = l_booked();
     this->filters = m_filter();
     this->id_reserve_list = list<int>();
+    this->sort_info = SortInfo();
 }
 
 Database::User::~User()
@@ -235,9 +253,13 @@ string Database::User::generate_id()
 
 void Database::User::sort_hotels(Database::l_hotels &hotels)
 {
-    hotels.sort([] (const Hotel* h1, const Hotel* h2)
+    hotels.sort([&] (const Hotel* h1, const Hotel* h2)
     {
-        return h1->id < h2->id;
+        int cmp_res = h1->comparator(sort_info.property, h2);
+        if(cmp_res)    return (cmp_res == ConstNames::Smaller_cmp) ^ sort_info.mode;
+
+
+        return (h1->id < h2->id) ^  sort_info.mode;
     });
 }
 
@@ -261,4 +283,15 @@ void Database::User::clean_reservations_up()
     booked_rooms.clear();
 }
 
-bool Database::User::the_default_filter_applied() { return filters[FilterMode::DefaultAvgPrice]->get_activity_status(); }
+void Database::User::set_sort_info(const SortInfo& sort_info)
+{
+    this->sort_info = sort_info;
+}
+
+bool Database::User::the_default_filter_applied()
+{
+    auto default_filter = filters.find(FilterMode::DefaultAvgPrice);
+    if(default_filter != filters.end())
+        return filters[FilterMode::DefaultAvgPrice]->get_activity_status();
+    return false;
+}

@@ -114,6 +114,11 @@ void ObjectRelational::set_filter(const bool activation_mode, Database::User *us
     user->set_default_filter(activation_mode);
 }
 
+void ObjectRelational::set_sort_info(const Database::User::SortInfo &sort_info, Database::User* user)
+{
+    user->set_sort_info(sort_info);
+}
+
 void ObjectRelational::delete_filter(Database::User *user)
 {
     user->delete_filter();

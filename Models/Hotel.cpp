@@ -46,7 +46,7 @@ Database::Hotel::~Hotel()
     clean_ratings_up();
 }
 
-info_t Database::Hotel::to_string()
+info_t Database::Hotel::to_string() const
 {
     ostringstream os;
     os << setprecision(ConstNames::Precision) << fixed;
@@ -192,9 +192,9 @@ float Database::Hotel::get_avg_price() const
     return avg_price;
 }
 
-info_t Database::Hotel::get_rooms_price()
+map<int, float> Database::Hotel::get_map_of_rooms_price() const
 {
-    map<Room::Room_Class, float> map_of_price;
+    map<int, float> map_of_price;
     map_of_price.insert(make_pair(Room::Room_Class::Standard, 0));
     map_of_price.insert(make_pair(Room::Room_Class::Deluxe, 0));
     map_of_price.insert(make_pair(Room::Room_Class::Luxury, 0));
@@ -205,6 +205,12 @@ info_t Database::Hotel::get_rooms_price()
         float price = (*room_itr)->price;
         map_of_price[type] = price;
     }
+    return map_of_price;
+}
+
+info_t Database::Hotel::get_rooms_price()
+{
+    auto map_of_price = get_map_of_rooms_price();
     ostringstream os;
     os << map_of_price[Room::Room_Class::Standard] << ConstNames::Space << map_of_price[Room::Room_Class::Deluxe] << ConstNames::Space << map_of_price[Room::Room_Class::Luxury] << ConstNames::Space << map_of_price[Room::Room_Class::Premium];
     return os.str();
@@ -264,3 +270,27 @@ info_t Database::Hotel::get_hotel_overview() {return hotel_overview; }
 info_t Database::Hotel::get_amenities() { return property_amenities; }
 
 pair<float, float> Database::Hotel::get_coordinates() { return make_pair(geo_coordinates.latitude, geo_coordinates.longitude); }
+
+int Database::Hotel::comparator(enum SortProperty property, const Hotel *right_side) const
+{
+    auto map = get_map_of_rooms_price();
+    auto rs_map = right_side->get_map_of_rooms_price();
+    switch(property)
+    {
+        case SP_Id : return comparator(id, right_side->id);
+        case SP_Name : return comparator(property_name, right_side->property_name);
+        case SP_Star_Rating : return comparator(hotel_star_rating, right_side->hotel_star_rating);
+        case SP_City : return comparator(city, right_side->city);
+        case SP_StandardRoomPrice : return comparator(map[Room::Room_Class::Standard], rs_map[Room::Room_Class::Standard]);
+        case SP_DeluxeRoomPrice : return comparator(map[Room::Room_Class::Deluxe], rs_map[Room::Room_Class::Deluxe]);
+        case SP_LuxuryRoomPrice : return comparator(map[Room::Room_Class::Luxury], rs_map[Room::Room_Class::Luxury]);
+        case SP_PremiumRoomPrice : return comparator(map[Room::Room_Class::Premium], rs_map[Room::Room_Class::Premium]);
+        case SP_AvgRoomPrice : return comparator(avg_price, right_side->avg_price);
+    }
+}
+
+template<typename T>
+int Database::Hotel::comparator(const T& left_side, const T& hand_side)
+{
+    return left_side < hand_side ? ConstNames::Smaller_cmp : left_side == hand_side ? ConstNames::Equal_cmp : ConstNames::Greater_cmp;
+}

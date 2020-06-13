@@ -15,6 +15,11 @@ public:
         AvgPrice,
         Advanced
     };
+    enum SortMode
+    {
+        SM_Ascending,
+        SM_Descending
+    };
     struct FilterInfo
     {
         std::map<std::string, Hotel::Room::Room_Class> m_room_type;
@@ -40,6 +45,13 @@ public:
         int check_out;
         ReserveInfo();
     };
+    struct SortInfo
+    {
+        std::map<std::string, Hotel::SortProperty> map_sort_property;
+        Hotel::SortProperty property;
+        SortMode mode;
+        SortInfo();
+    };
     class Filter;
     class ReserveCase;
     typedef std::list<float> l_transactions;
@@ -64,6 +76,7 @@ public:
 
     void set_filters(const FilterInfo& filter_info);
     void set_default_filter(const bool activation_mode);
+    void set_sort_info(const SortInfo& sort_info);
     void delete_filter();
     void deactivate_default_filter();
     void delete_reserve(int id);
@@ -101,6 +114,7 @@ private:
     info_t email;
     long long password;
     Wallet wallet;
+    SortInfo sort_info;
     l_booked booked_rooms;
     m_filter filters;
     std::list<int> id_reserve_list;

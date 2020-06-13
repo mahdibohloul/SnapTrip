@@ -31,6 +31,9 @@ namespace ConstNames
     const int Default_Price = -1;
     const int Default_Reservation = 0;
     const int Minimum_Reservation_Count = 10;
+    const int Smaller_cmp = -1;
+    const int Equal_cmp = 0;
+    const int Greater_cmp = 1;
     const float Minimum_Deposit_Amount = 0.0f;
     const float Min_Rate = 1.0;
     const float Max_Rate = 5.0;
@@ -77,6 +80,7 @@ namespace ConstNames
     const std::string Rating_Order = "ratings";
     const std::string POST_Wallet_Order = "POST Wallet";
     const std::string GET_Wallet_Order = "GET Wallet";
+    const std::string Sort_Order = "sort";
 
     const std::string ID = "id";
     const std::string Email = "email";
@@ -121,6 +125,19 @@ namespace ConstNames
     const std::string Active = "active";
     const std::string True = "true";
     const std::string False = "false";
+    const std::string Online_Mode = "online mode";
+    const std::string Offline_Mode = "offline mode";
+    const std::string Property = "property";
+    const std::string Order = "order";
+    const std::string Name = "name";
+    const std::string Star_Rating = "star_rating";
+    const std::string Standard_Room_Price = "standard_room_price";
+    const std::string Deluxe_Room_Price = "deluxe_room_price";
+    const std::string Luxury_Room_Price = "luxury_room_price";
+    const std::string Premium_Room_Price = "premium_room_price";
+    const std::string Average_Room_Price = "average_room_price";
+    const std::string Ascending = "ascending";
+    const std::string Descending = "descending";
 }
 
 #endif
