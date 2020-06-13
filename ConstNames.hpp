@@ -19,7 +19,8 @@ namespace ConstNames
     const int Minimum_of_Characters = 1;
     const int No_Room = 0;
     const int One_Night = 1;
-    const int File_Name_Position = 1;
+    const int Hotel_File_Addr_Position = 1;
+    const int Rating_File_Addr_Position = 2;
     const int Minimum_No_Transactions = 0;
     const int Minimum_Hotel_Star = 1;
     const int Maximum_Hotel_Star = 5;

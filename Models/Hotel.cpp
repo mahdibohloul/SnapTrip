@@ -38,6 +38,7 @@ Database::Hotel::Hotel(const Database::HotelInfo& info) : geo_coordinates(Coordi
     this->rooms = prepare_rooms(info);
     this->map_ratings = m_rating();
     avg_price = calculate_avg_price(info);
+    this->default_rating = RatingInfo();
 }
 
 Database::Hotel::~Hotel()
@@ -45,6 +46,8 @@ Database::Hotel::~Hotel()
     clean_rooms_up();
     clean_ratings_up();
 }
+
+void Database::Hotel::set_default_rating_info(RatingInfo &rating_info) { this->default_rating = rating_info; }
 
 info_t Database::Hotel::to_string() const
 {
@@ -128,9 +131,7 @@ Database::Hotel::v_room Database::Hotel::booked_out(User* user, int type, int qu
 
 Database::Hotel::RatingInfo Database::Hotel::get_avg_ratings()
 {
-    if(map_ratings.empty())
-        throw Exception(ConstNames::No_Rating_msg);
-    return calculate_avg_ratings();
+    return default_rating;
 }
 
 Database::Hotel::RatingInfo Database::Hotel::calculate_avg_ratings()

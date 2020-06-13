@@ -72,6 +72,7 @@ public:
     int comparator(enum SortProperty property, const Hotel* right_side) const;
 
     void post_rating(RatingInfo& rating_info);
+    void set_default_rating_info(RatingInfo& rating_info);
 
     RatingInfo get_avg_ratings();
 
@@ -108,6 +109,7 @@ private:
     info_t image_url;
     v_room rooms;
     m_rating map_ratings;
+    RatingInfo default_rating;
     int hotel_star_rating;
     float avg_price;
 };

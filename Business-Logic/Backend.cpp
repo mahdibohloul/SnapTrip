@@ -621,7 +621,7 @@ Content Backend::find_info(const string& mode, const data_t& data)
 {
     auto iterator = find(data.begin(), data.end(), mode);
     if(info_exist(iterator, iterator + 1, data.end()) != ConstNames::Exist)
-        return ConstNames::Empty_Str;
+        throw Exception(ConstNames::Bad_Request_msg);
     iterator++;
     return (*iterator);
 }

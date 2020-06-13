@@ -13,6 +13,7 @@ public:
     static void release();
     ~API();
     void database_setup(Backend::data_t data);
+    void rating_db_setup(Backend::data_t data);
     Backend::data_t parse_content(Content content, char separator);
     void command_processor(Backend::data_t command_data);
     template<class T> void responding(T response);
