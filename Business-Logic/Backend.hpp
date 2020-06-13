@@ -51,6 +51,7 @@ private:
     void post_reserve(data_t data);
     void post_comment(data_t data);
     void post_rating(data_t data);
+    void post_sort(data_t data);
     void wallet_get(data_t data);
     void get_full_hotel(data_t data);
     void get_hotels();
@@ -65,8 +66,10 @@ private:
     void get_hotels_info(info_t hotel_id);
     void set_filters(const Database::User::FilterInfo& filter_info);
     void set_filters(const bool activation_mode);
+    void set_sort_info(const Database::User::SortInfo& sort_info);
     void construct_maps();
     void check_question_mark(data_t& data);
+    void check_access(const std::string& mode);
     void responding(std::string message);
 
     bool in_the_command(const std::string& command, enum RequestType type);
@@ -86,6 +89,7 @@ private:
     bool valid_rating_info(std::string hotel_id, std::string location, std::string cleanliness, std::string staff, std::string facilities, std::string value_for_money, std::string overall_rating);
     bool fill_default_filter_info(const data_t& data);
     template <class T> bool in_range(T value, T min, T max);
+    bool valid_sort_info(const std::string& property, const std::string mode);
 
     Content find_info(const std::string& mode, const data_t& data);
 
@@ -93,6 +97,7 @@ private:
     Database::User::FilterInfo fill_filter_info(const data_t& data);
     Database::User::ReserveInfo fill_reserve_info(const data_t& data);
     Database::Hotel::RatingInfo fill_rating_info(const data_t& data);
+    Database::User::SortInfo fill_sort_info(const data_t& data);
 
     template<class T>
     hash_t hashing(T raw);

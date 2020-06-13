@@ -3,7 +3,7 @@
 
 #include "../Business-Logic/Backend.hpp"
 
-enum Data_Enum
+enum Data_Hotel_Enum
 {
     e_id,
     e_name,
@@ -24,6 +24,17 @@ enum Data_Enum
     e_p_price
 };
 
+enum Data_Rating_Enum
+{
+    DR_Id,
+    DR_Location,
+    DR_Cleanliness,
+    DR_Staff,
+    DR_Facilities,
+    DR_Value,
+    DR_Overall
+};
+
 class ObjectRelational
 {
 public:
@@ -32,6 +43,7 @@ public:
     ~ObjectRelational();
 
     void database_setup(Backend::data_t data);
+    void rating_db_setup(Backend::data_t data);
     void deposit_in(const Database::UserInfo& user_info, Database::User* user);
     void set_filter(const Database::User::FilterInfo& filter_info, Database::User* user);
     void set_filter(const bool activation_mode, Database::User* user);
@@ -50,6 +62,7 @@ public:
     void get_comment(std::string hotel_id);
     void get_rating(std::string hotel_id);
     void delete_reserve(Database::User* user, int id);
+    void set_sort_info(const Database::User::SortInfo& sort_info, Database::User* user);
 
     Database::User* get_specific_user(Database::UserInfo user_info, const std::string& mode);
 

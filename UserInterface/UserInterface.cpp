@@ -49,6 +49,24 @@ void UserInterface::database_setup(Content file_name)
     }
 }
 
+void UserInterface::rating_db_setup(Content file_name)
+{
+    ifstream db_file(file_name);
+    Content content;
+    dump_one_line(db_file);
+    while(db_file)
+    {
+        getline(db_file, content);
+        if(content.size() >= ConstNames::Minimum_of_Characters)
+        {
+            Backend::data_t data = api->parse_content(content, ConstNames::Comma);
+            api->rating_db_setup(data);
+        }
+        else
+            break;
+    }
+}
+
 void UserInterface::dump_one_line(ifstream& file)
 {
     Content dump;

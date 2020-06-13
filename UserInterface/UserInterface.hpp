@@ -16,6 +16,7 @@ public:
     static UserInterface* get_instance();
     static void release();
     void database_setup(Content file_name);
+    void rating_db_setup(Content file_name);
     void process();
 
 private:

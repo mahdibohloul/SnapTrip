@@ -57,6 +57,21 @@ void ObjectRelational::database_setup(Backend::data_t data)
     database->hotel_setup(hotel_info);
 }
 
+void ObjectRelational::rating_db_setup(Backend::data_t data)
+{
+    auto hotel_id = data[DR_Id];
+    auto hotel = database->get_hotels(hotel_id);
+    auto rating_info = Database::Hotel::RatingInfo();
+    rating_info.hotel_id = hotel_id;
+    rating_info.location = stof(data[DR_Location]);
+    rating_info.cleanliness = stof(data[DR_Cleanliness]);
+    rating_info.staff = stof(data[DR_Staff]);
+    rating_info.facilities = stof(data[DR_Facilities]);
+    rating_info.value_for_money = stof(data[DR_Value]);
+    rating_info.overall_rating = stof(data[DR_Overall]);
+    hotel->set_default_rating_info(rating_info);
+}
+
 Database::User* ObjectRelational::get_specific_user(Database::UserInfo user_info, const string& mode)
 {
     if(mode == ConstNames::Signup_Order)
@@ -112,6 +127,11 @@ void ObjectRelational::set_filter(const Database::User::FilterInfo &filter_info,
 void ObjectRelational::set_filter(const bool activation_mode, Database::User *user)
 {
     user->set_default_filter(activation_mode);
+}
+
+void ObjectRelational::set_sort_info(const Database::User::SortInfo &sort_info, Database::User* user)
+{
+    user->set_sort_info(sort_info);
 }
 
 void ObjectRelational::delete_filter(Database::User *user)

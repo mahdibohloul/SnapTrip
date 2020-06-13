@@ -3,6 +3,7 @@
 #include "../../Models/Comment.hpp"
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 using namespace std;
 
 API::Result::Result(string msg)
@@ -140,7 +141,6 @@ string API::Result::get_hotel_full_info()
 
 string API::Result::get_hotels_info()
 {
-
     ostringstream os;
     string delim;
     os << get_extra_info();
@@ -158,9 +158,7 @@ string API::Result::get_extra_info()
     auto backend = Backend::get_instance();
     auto user = backend->get_curr_user();
     if(user->the_default_filter_applied())
-    {
         os << ConstNames::Default_Filter_msg << endl;
-    }
     return os.str();
 }
 
