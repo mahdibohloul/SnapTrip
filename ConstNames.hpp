@@ -54,6 +54,7 @@ namespace ConstNames
     const std::string Luxury_Room_Prefix = "l";
     const std::string Premium_Room_Prefix = "p";
     const std::string User_Id_Prefix = "u";
+    const std::string Dump_str_Number = "1";
 
     const std::string POST_METHOD = "POST";
     const std::string GET_METHOD = "GET";
@@ -82,6 +83,7 @@ namespace ConstNames
     const std::string POST_Wallet_Order = "POST Wallet";
     const std::string GET_Wallet_Order = "GET Wallet";
     const std::string Sort_Order = "sort";
+    const std::string Manual_Weights_Order = "manual_weights";
 
     const std::string ID = "id";
     const std::string Email = "email";
@@ -137,6 +139,7 @@ namespace ConstNames
     const std::string Luxury_Room_Price = "luxury_room_price";
     const std::string Premium_Room_Price = "premium_room_price";
     const std::string Average_Room_Price = "average_room_price";
+    const std::string Rating_Overall = "rating_overall";
     const std::string Ascending = "ascending";
     const std::string Descending = "descending";
 }

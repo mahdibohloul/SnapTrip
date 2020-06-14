@@ -52,12 +52,14 @@ private:
     void post_comment(data_t data);
     void post_rating(data_t data);
     void post_sort(data_t data);
+    void post_manual_weights(data_t data);
     void wallet_get(data_t data);
     void get_full_hotel(data_t data);
     void get_hotels();
     void get_reserve(data_t data);
     void get_comment(data_t data);
     void get_rating(data_t data);
+    void get_manual_weights(data_t data);
     void delete_filter(data_t data);
     void delete_reserve(data_t data);
     void booked_out(Database::User::ReserveInfo& reserve_info);
@@ -96,8 +98,9 @@ private:
     Database::UserInfo fill_user_info(const data_t& data, const std::string mode);
     Database::User::FilterInfo fill_filter_info(const data_t& data);
     Database::User::ReserveInfo fill_reserve_info(const data_t& data);
-    Database::Hotel::RatingInfo fill_rating_info(const data_t& data);
+    Database::Hotel::RatingInfo fill_rating_info(const data_t& data, const std::string mode = ConstNames::Rating_Order);
     Database::User::SortInfo fill_sort_info(const data_t& data);
+    Database::User::ManualWeights fill_manual_weights_info(const data_t& data);
 
     template<class T>
     hash_t hashing(T raw);

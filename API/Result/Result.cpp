@@ -62,6 +62,13 @@ API::Result::Result(Database::Hotel::RatingInfo avg_ratings)
     construct_map();
 }
 
+API::Result::Result(Database::User::ManualWeights manual_weights)
+{
+    this->manual_weights = manual_weights;
+    this->type = Manual_Weights;
+    construct_map();
+}
+
 API::Result::~Result()
 {
     comments.clear();
@@ -191,6 +198,22 @@ string API::Result::get_average_ratings()
     return os.str() + ConstNames::New_Line;
 }
 
+string API::Result::get_manual_weights()
+{
+    ostringstream os;
+    os << setprecision(ConstNames::Precision) << fixed;
+    os << ConstNames::Active << ConstNames::Space << (manual_weights.activity == true ? ConstNames::True : ConstNames::False);
+    if(manual_weights.activity)
+    {
+        os << ConstNames::Space << ConstNames::Location << ConstNames::Space << manual_weights.weights.location << ConstNames::Space;
+        os << ConstNames::Cleanliness << ConstNames::Space << manual_weights.weights.cleanliness << ConstNames::Space;
+        os << ConstNames::Staff << ConstNames::Space << manual_weights.weights.staff << ConstNames::Space;
+        os << ConstNames::Facilities << ConstNames::Space << manual_weights.weights.facilities << ConstNames::Space;
+        os << ConstNames::Value_For_Money_sep << ConstNames::Space << manual_weights.weights.value_for_money;
+    }
+    return os.str() + ConstNames::New_Line;
+}
+
 void API::Result::construct_map()
 {
     map_of_results.insert(make_pair(Message, &API::Result::get_message));
@@ -201,4 +224,5 @@ void API::Result::construct_map()
     map_of_results.insert(make_pair(Hotels, &API::Result::get_hotels_info));
     map_of_results.insert(make_pair(GET_Comments, &API::Result::get_comments_info));
     map_of_results.insert(make_pair(Average_Ratings, &API::Result::get_average_ratings));
+    map_of_results.insert(make_pair(Manual_Weights, &API::Result::get_manual_weights));
 }

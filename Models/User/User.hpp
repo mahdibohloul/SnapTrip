@@ -52,11 +52,23 @@ public:
         SortMode mode;
         SortInfo();
     };
+    struct ManualWeights
+    {
+        Hotel::RatingInfo weights;
+        bool activity;
+        ManualWeights(const Hotel::RatingInfo& i_weights = Hotel::RatingInfo(), bool i_activity = ConstNames::Active_Mode)
+        {
+            weights = i_weights;
+            activity = i_activity;
+        }
+        bool operator==(const ManualWeights& second_weights);
+    };
     class Filter;
     class ReserveCase;
     typedef std::list<float> l_transactions;
     typedef std::list<ReserveCase*> l_booked;
     typedef std::map<FilterMode, Filter*> m_filter;
+    typedef std::map<Hotel*, Hotel::Rating*> map_ratings;
 
 private:
     struct Wallet
@@ -77,9 +89,12 @@ public:
     void set_filters(const FilterInfo& filter_info);
     void set_default_filter(const bool activation_mode);
     void set_sort_info(const SortInfo& sort_info);
+    void set_rating(Hotel* hotel, Hotel::Rating* rating);
+    void set_manual_weights(const ManualWeights& manual_weights);
     void delete_filter();
     void deactivate_default_filter();
     void delete_reserve(int id);
+    ManualWeights get_manual_weights();
 
     bool can_pay(float cost);
     bool the_default_filter_applied();
@@ -116,8 +131,10 @@ private:
     Wallet wallet;
     SortInfo sort_info;
     l_booked booked_rooms;
+    map_ratings ratings;
     m_filter filters;
     std::list<int> id_reserve_list;
+    ManualWeights manual_weights;
 };
 
 #endif
