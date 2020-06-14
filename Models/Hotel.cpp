@@ -26,6 +26,14 @@ Database::Hotel::RatingInfo::RatingInfo()
     user = nullptr;
 }
 
+bool Database::Hotel::RatingInfo::operator==(const RatingInfo &second)
+{
+    if(hotel_id == second.hotel_id && location == second.location && cleanliness == second.cleanliness && staff == second.staff &&
+        facilities == second.facilities && value_for_money == second.value_for_money && overall_rating == second.overall_rating)
+        return true;
+    return false;
+}
+
 Database::Hotel::Hotel(const Database::HotelInfo& info) : geo_coordinates(Coordinates(info.longitude, info.latitude))
 {
     this->id = info.unique_id;
@@ -68,10 +76,15 @@ void Database::Hotel::post_rating(RatingInfo &rating_info)
     if(rating != map_ratings.end())
     {
         delete rating->second;
-        rating->second = new Rating(rating_info);
+        auto rating_obj = new Rating(rating_info);
+        rating->second = rating_obj;
+        rating_info.user->set_rating(this, rating_obj);
     }
-    else
-        map_ratings.insert(make_pair(rating_info.user, new Rating(rating_info)));
+    else{
+        auto rating_obj = new Rating(rating_info);
+        map_ratings.insert(make_pair(rating_info.user, rating_obj));
+        rating_info.user->set_rating(this, rating_obj);
+    }
 }
 
 bool Database::Hotel::have_room_with_this_specifications(int type, int quantity, int check_in, int check_out) const
@@ -287,6 +300,7 @@ int Database::Hotel::comparator(enum SortProperty property, const Hotel *right_s
         case SP_LuxuryRoomPrice : return comparator(map[Room::Room_Class::Luxury], rs_map[Room::Room_Class::Luxury]);
         case SP_PremiumRoomPrice : return comparator(map[Room::Room_Class::Premium], rs_map[Room::Room_Class::Premium]);
         case SP_AvgRoomPrice : return comparator(avg_price, right_side->avg_price);
+        case SP_RatingOverall : return comparator(default_rating.overall_rating, right_side->default_rating.overall_rating);
     }
 }
 

@@ -210,6 +210,20 @@ void Backend::post_rating(data_t data)
         throw Exception(ConstNames::Bad_Request_msg);
 }
 
+void Backend::post_manual_weights(data_t data)
+{
+    if(!data.empty())
+    {
+        check_question_mark(data);
+        check_access(ConstNames::Online_Mode);
+        auto manual_weights = fill_manual_weights_info(data);
+        object_relational->post_manual_weights(manual_weights, *online_users.begin());
+        responding(ConstNames::OK_msg);
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
+}
+
 void Backend::post_filter(data_t data)
 {
     if(!data.empty())
@@ -319,6 +333,17 @@ void Backend::get_rating(data_t data)
   }
   else
     throw Exception(ConstNames::Bad_Request_msg);
+}
+
+void Backend::get_manual_weights(data_t data)
+{
+    if(data.empty())
+    {
+        check_access(ConstNames::Online_Mode);
+        object_relational->get_manual_weights(*online_users.begin());
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
 }
 
 void Backend::delete_filter(data_t data)
@@ -508,17 +533,19 @@ Database::User::ReserveInfo Backend::fill_reserve_info(const data_t& data)
     throw Exception(ConstNames::Bad_Request_msg);
 }
 
-Database::Hotel::RatingInfo Backend::fill_rating_info(const data_t& data)
+Database::Hotel::RatingInfo Backend::fill_rating_info(const data_t& data, const string mode)
 {
     Database::Hotel::RatingInfo rating_info;
-    string hotel_id, location, cleanliness, staff, facilities, value_for_money, overall_rating;
-    hotel_id = find_info(ConstNames::Hotel, data);
+    string hotel_id = ConstNames::Dump_str_Number, location, cleanliness, staff, facilities, value_for_money, overall_rating = ConstNames::Dump_str_Number;
     location = find_info(ConstNames::Location, data);
     cleanliness = find_info(ConstNames::Cleanliness, data);
     staff = find_info(ConstNames::Staff, data);
     facilities = find_info(ConstNames::Facilities, data);
     value_for_money = find_info(ConstNames::Value_For_Money, data);
-    overall_rating = find_info(ConstNames::Overall_Rating, data);
+    if(mode == ConstNames::Rating_Order){
+        hotel_id = find_info(ConstNames::Hotel, data);
+        overall_rating = find_info(ConstNames::Overall_Rating, data);
+    }
     if(valid_rating_info(hotel_id, location, cleanliness, staff, facilities, value_for_money, overall_rating))
     {
         rating_info.hotel_id = hotel_id;
@@ -532,6 +559,15 @@ Database::Hotel::RatingInfo Backend::fill_rating_info(const data_t& data)
         return rating_info;
     }
     throw Exception(ConstNames::Bad_Request_msg);
+}
+
+Database::User::ManualWeights Backend::fill_manual_weights_info(const data_t& data)
+{
+    auto weights = Database::Hotel::RatingInfo();
+    auto activity_status = (find_info(ConstNames::Active, data) == ConstNames::True) ? ConstNames::Active_Mode : ConstNames::Inactive_Mode;
+    if(activity_status)
+        weights = fill_rating_info(data, ConstNames::Manual_Weights_Order);
+    return Database::User::ManualWeights(weights, activity_status);
 }
 
 bool Backend::valid_sort_info(const std::string& property, const std::string mode)
@@ -725,11 +761,13 @@ void Backend::construct_maps()
     func_post_map.insert(make_pair(ConstNames::Rating_Order, &Backend::post_rating));
     func_post_map.insert(make_pair(ConstNames::Default_Price_Filter_Order, &Backend::post_default_price_filter));
     func_post_map.insert(make_pair(ConstNames::Sort_Order, &Backend::post_sort));
+    func_post_map.insert(make_pair(ConstNames::Manual_Weights_Order, &Backend::post_manual_weights));
     func_get_map.insert(make_pair(ConstNames::Wallet_Order, &Backend::wallet_get));
     func_get_map.insert(make_pair(ConstNames::Get_Hotels_Order, &Backend::get_full_hotel));
     func_get_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::get_reserve));
     func_get_map.insert(make_pair(ConstNames::Comment_Order, &Backend::get_comment));
     func_get_map.insert(make_pair(ConstNames::Rating_Order, &Backend::get_rating));
+    func_get_map.insert(make_pair(ConstNames::Manual_Weights_Order, &Backend::get_manual_weights));
     func_delete_map.insert(make_pair(ConstNames::Filter_Order, &Backend::delete_filter));
     func_delete_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::delete_reserve));
 }

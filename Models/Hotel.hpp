@@ -24,7 +24,8 @@ public:
         SP_DeluxeRoomPrice,
         SP_LuxuryRoomPrice,
         SP_PremiumRoomPrice,
-        SP_AvgRoomPrice
+        SP_AvgRoomPrice,
+        SP_RatingOverall
     };
     struct Coordinates
     {
@@ -43,6 +44,7 @@ public:
         float overall_rating;
         User* user;
         RatingInfo();
+        bool operator==(const RatingInfo& second);
     };
     class Room;
     class Rating;

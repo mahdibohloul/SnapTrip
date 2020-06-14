@@ -180,6 +180,11 @@ void ObjectRelational::post_rating(Database::Hotel::RatingInfo &rating_info)
     hotel->post_rating(rating_info);
 }
 
+void ObjectRelational::post_manual_weights(Database::User::ManualWeights &manual_weights, Database::User* user)
+{
+    user->set_manual_weights(manual_weights);
+}
+
 void ObjectRelational::get_rating(std::string hotel_id)
 {
     auto hotel = database->query_in_hotels(hotel_id);
@@ -187,6 +192,12 @@ void ObjectRelational::get_rating(std::string hotel_id)
         throw Exception(ConstNames::Not_Found_msg);
     auto avg_ratings = hotel->get_avg_ratings();
     responding(avg_ratings);
+}
+
+void ObjectRelational::get_manual_weights(Database::User *user)
+{
+    auto manual_weights = user->get_manual_weights();
+    responding(manual_weights);
 }
 
 template<class T>

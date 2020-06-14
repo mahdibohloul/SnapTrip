@@ -40,7 +40,8 @@ Database::User::SortInfo::SortInfo()
         make_pair(ConstNames::Deluxe_Room_Price, Hotel::SortProperty::SP_DeluxeRoomPrice),
         make_pair(ConstNames::Luxury_Room_Price, Hotel::SortProperty::SP_LuxuryRoomPrice),
         make_pair(ConstNames::Premium_Room_Price, Hotel::SortProperty::SP_PremiumRoomPrice),
-        make_pair(ConstNames::Average_Room_Price, Hotel::SortProperty::SP_AvgRoomPrice)
+        make_pair(ConstNames::Average_Room_Price, Hotel::SortProperty::SP_AvgRoomPrice),
+        make_pair(ConstNames::Rating_Overall, Hotel::SortProperty::SP_RatingOverall)
     };
     property = Hotel::SortProperty::SP_Id;
     mode = SortMode::SM_Ascending;
@@ -54,6 +55,13 @@ Database::User::ReserveInfo::ReserveInfo()
     m_room_type.insert(make_pair(ConstNames::PremiumRoom, Hotel::Room::Room_Class::Premium));
 }
 
+bool Database::User::ManualWeights::operator==(const ManualWeights &second_weights)
+{
+    if(activity == second_weights.activity && weights == second_weights.weights)
+        return true;
+    return false;
+}
+
 Database::User::User(const UserInfo& info)
 {
     this->id = generate_id();
@@ -65,6 +73,8 @@ Database::User::User(const UserInfo& info)
     this->filters = m_filter();
     this->id_reserve_list = list<int>();
     this->sort_info = SortInfo();
+    this->ratings = map_ratings();
+    this->manual_weights = ManualWeights();
 }
 
 Database::User::~User()
@@ -142,6 +152,20 @@ void Database::User::set_filters(const enum FilterMode mode)
     }
 }
 
+void Database::User::set_rating(Hotel *hotel, Hotel::Rating *rating)
+{
+    ratings[hotel] = rating;
+}
+
+void Database::User::set_manual_weights(const ManualWeights &manual_weights_obj)
+{
+    if(manual_weights.activity == ConstNames::Inactive_Mode){
+        this->manual_weights.activity = ConstNames::Inactive_Mode;
+    }
+    else
+        this->manual_weights = manual_weights_obj;
+}
+
 void Database::User::set_default_filter(const bool activation_mode)
 {
     if(activation_mode && could_apply_default_filter())
@@ -195,6 +219,8 @@ bool Database::User::can_pay(float cost)
         return false;
     return true;
 }
+
+Database::User::ManualWeights Database::User::get_manual_weights() { return manual_weights;}
 
 void Database::User::add_reserve_case(Hotel* hotel, Hotel::v_room& b_rooms, int check_in, int check_out, float price)
 {
@@ -253,13 +279,11 @@ string Database::User::generate_id()
 
 void Database::User::sort_hotels(Database::l_hotels &hotels)
 {
-    hotels.sort([&] (const Hotel* h1, const Hotel* h2)
+    hotels.sort([&] (const Hotel* h1, const Hotel* h2) -> bool
     {
         int cmp_res = h1->comparator(sort_info.property, h2);
         if(cmp_res)    return (cmp_res == ConstNames::Smaller_cmp) ^ sort_info.mode;
-
-
-        return (h1->id < h2->id) ^  sort_info.mode;
+        return h1->id < h2->id;
     });
 }
 

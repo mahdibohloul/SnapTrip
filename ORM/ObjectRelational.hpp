@@ -51,12 +51,14 @@ public:
     void post_comment(Database::User* user, std::string hotel_id, std::string comment);
     void logout_user(Database::User* user);
     void post_rating(Database::Hotel::RatingInfo& rating_info);
+    void post_manual_weights(Database::User::ManualWeights& manual_weights, Database::User* user);
 
     bool authentication(Database::UserInfo user_info, const std::string mode, const Database::l_users& users = Database::l_users());
 
     void get_account_information(const Database::UserInfo& user_info, Database::User* user);
     void get_hotels(Database::User* user);
     void get_hotels(info_t hotel_id);
+    void get_manual_weights(Database::User* user);
     void booked_out(Database::User::ReserveInfo& reserve_info, Database::User* user);
     void get_reserve(Database::User* user);
     void get_comment(std::string hotel_id);
