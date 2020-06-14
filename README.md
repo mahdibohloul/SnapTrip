@@ -50,7 +50,7 @@ make
 ```
 - Run the program with init data
 ```bash
-./utrip Data/Hotels.csv
+./utrip assets/hotels.csv assets/ratings.csv
 ```
 - Signup
 ```bash
@@ -139,6 +139,19 @@ GET comments ? hotel <hotel_id>
 ```bash
 GET ratings ? hotel <hotel_id>
 ```
+- We now have a default price filter for filtering hotels under certain conditions.
+    - If the user has not set any average price filter
+    - If the user has 10 or more reservations.
+    - If this filter is not disabled by the user.
+```bash
+POST default_price_filter ? active <true|false>
+```
+- With the following command, you can arrange hotels ascending or descending based on the following features.
+    - property: id, name, star_rating, city, standard_room_price, deluxe_room_price, luxury_room_price, premium_room_price, average_room_price.
+```bash
+POST sort ? property <property> order <ascending|descending>
+```
+‍
 
 
 
