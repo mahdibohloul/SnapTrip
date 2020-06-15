@@ -33,7 +33,7 @@ private:
     Result(Database::l_hotels hotels);
     Result(Database::l_comments comments);
     Result(Database::Hotel::RatingInfo avg_ratings);
-    Result(Database::User::ManualWeights manual_weights);
+    Result(Database::User::Weights manual_weights);
 
     void construct_map();
 
@@ -60,7 +60,7 @@ private:
     Database::Hotel::RatingInfo average_ratings;
     ResultType type;
     std::map<ResultType, result_method> map_of_results;
-    Database::User::ManualWeights manual_weights;
+    Database::User::Weights manual_weights;
 
 };
 

@@ -62,7 +62,7 @@ API::Result::Result(Database::Hotel::RatingInfo avg_ratings)
     construct_map();
 }
 
-API::Result::Result(Database::User::ManualWeights manual_weights)
+API::Result::Result(Database::User::Weights manual_weights)
 {
     this->manual_weights = manual_weights;
     this->type = Manual_Weights;
@@ -101,7 +101,7 @@ string API::Result::get_transactions_info()
 {
     ostringstream os;
     string delim;
-    for(float f : transactions)
+    for(long double f : transactions)
     {
         os << delim << f;
         delim = ConstNames::New_Line;

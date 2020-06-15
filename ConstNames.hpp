@@ -19,26 +19,34 @@ namespace ConstNames
     const int Minimum_of_Characters = 1;
     const int No_Room = 0;
     const int One_Night = 1;
+    const int Minimum_Ratings_Number = 1;
     const int Hotel_File_Addr_Position = 1;
     const int Rating_File_Addr_Position = 2;
     const int Minimum_No_Transactions = 0;
     const int Minimum_Hotel_Star = 1;
     const int Maximum_Hotel_Star = 5;
+    const int Maximum_Weights_Number = 5;
+    const int Minimum_Weights_Number = 1;
     const int Minimum_Hotel_Reserve = 1;
     const int Maximum_Hotel_Reserve = 30;
     const int Default_Filter_Coefficient = 2;
+    const int Default_Exponent_Dirivative = 2;
     const int Default_Star = 0;
     const int Default_Quantity = -1;
     const int Default_Price = -1;
     const int Default_Reservation = 0;
     const int Minimum_Reservation_Count = 10;
+    const int Reverse = -1;
     const int Smaller_cmp = -1;
     const int Equal_cmp = 0;
     const int Greater_cmp = 1;
-    const float Minimum_Deposit_Amount = 0.0f;
-    const float Min_Rate = 1.0;
-    const float Max_Rate = 5.0;
-    const float Fifty_Percent = 0.5;
+    const long double Minimum_Deposit_Amount = 0.0f;
+    const long double Min_Rate = 1.0;
+    const long double Max_Rate = 5.0;
+    const long double Fifty_Percent = 0.5;
+    const long double Minimum_Dirivative_Amount = 0.00;
+    const long double Step_Size = 1.0;
+    const long double Epsilon = 0.0001;
 
     const std::string Empty_Str = "";
     const std::string Space_str = " ";
@@ -68,6 +76,7 @@ namespace ConstNames
     const std::string No_Rating_msg = "No Rating";
     const std::string Empty_msg = "Empty";
     const std::string OK_msg = "OK";
+    const std::string Insufficient_Ratings_msg = "Insufficient Ratings";
     const std::string Default_Filter_msg = "* Results have been filtered by the default price filter.";
 
     const std::string Signup_Order = "signup";
@@ -140,6 +149,7 @@ namespace ConstNames
     const std::string Premium_Room_Price = "premium_room_price";
     const std::string Average_Room_Price = "average_room_price";
     const std::string Rating_Overall = "rating_overall";
+    const std::string Rating_Personal = "rating_personal";
     const std::string Ascending = "ascending";
     const std::string Descending = "descending";
 }

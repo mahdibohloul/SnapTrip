@@ -9,6 +9,8 @@
 #include "../Filters/AdvancedFilter.hpp"
 #include "../Filters/DefaultAvgPriceFilter.hpp"
 #include "../../Exception/Exception.hpp"
+#include "../../Business-Logic/AI/AI.hpp"
+#include "../Rating.hpp"
 using namespace std;
 
 int Database::User::current_id = ConstNames::First_User_Id;
@@ -41,7 +43,8 @@ Database::User::SortInfo::SortInfo()
         make_pair(ConstNames::Luxury_Room_Price, Hotel::SortProperty::SP_LuxuryRoomPrice),
         make_pair(ConstNames::Premium_Room_Price, Hotel::SortProperty::SP_PremiumRoomPrice),
         make_pair(ConstNames::Average_Room_Price, Hotel::SortProperty::SP_AvgRoomPrice),
-        make_pair(ConstNames::Rating_Overall, Hotel::SortProperty::SP_RatingOverall)
+        make_pair(ConstNames::Rating_Overall, Hotel::SortProperty::SP_RatingOverall),
+        make_pair(ConstNames::Rating_Personal, Hotel::SortProperty::SP_RatingPersonal)
     };
     property = Hotel::SortProperty::SP_Id;
     mode = SortMode::SM_Ascending;
@@ -55,11 +58,72 @@ Database::User::ReserveInfo::ReserveInfo()
     m_room_type.insert(make_pair(ConstNames::PremiumRoom, Hotel::Room::Room_Class::Premium));
 }
 
-bool Database::User::ManualWeights::operator==(const ManualWeights &second_weights)
+bool Database::User::Weights::operator==(const Weights &second_weights)
 {
     if(activity == second_weights.activity && weights == second_weights.weights)
         return true;
     return false;
+}
+
+long double Database::User::Weights::operator[](const int which)
+{
+    switch(which)
+    {
+        case WE_Location: return weights.location;
+        case WE_Cleanliness : return weights.cleanliness;
+        case WE_Staff : return weights.staff;
+        case WE_Facilities : return weights.facilities;
+        case WE_Value : return weights.value_for_money;
+        default: return 0;
+    }
+}
+
+// Database::User::Weights& Database::User::Weights::operator=(const Weights &second)
+// {
+
+// }
+
+Database::User::Weights& Database::User::Weights::increase_this_var(const long double amount, const int which)
+{
+    switch(which)
+    {
+        case WE_Location:
+            (*this).weights.location += amount;
+            break;
+        case WE_Cleanliness:
+            (*this).weights.cleanliness += amount;
+            break;
+        case WE_Staff:
+            (*this).weights.staff += amount;
+            break;
+        case WE_Facilities:
+            (*this).weights.staff += amount;
+            break;
+        case WE_Value:
+            (*this).weights.value_for_money += amount;
+            break;
+    }
+    return *this;
+}
+
+Database::User::Weights& Database::User::Weights::operator-(const v_double numbers)
+{
+    weights.location -= numbers[0];
+    weights.cleanliness -= numbers[1];
+    weights.staff -= numbers[2];
+    weights.facilities -= numbers[3];
+    weights.value_for_money -= numbers[4];
+    return *this;
+}
+
+
+void Database::User::Weights::initialize_weights(std::vector<long double> temp)
+{
+    weights.location = temp[0];
+    weights.cleanliness = temp[1];
+    weights.staff = temp[2];
+    weights.facilities = temp[3];
+    weights.value_for_money = temp[4];
 }
 
 Database::User::User(const UserInfo& info)
@@ -74,7 +138,8 @@ Database::User::User(const UserInfo& info)
     this->id_reserve_list = list<int>();
     this->sort_info = SortInfo();
     this->ratings = map_ratings();
-    this->manual_weights = ManualWeights();
+    this->manual_weights = Weights();
+    this->estimated_weights = Weights();
 }
 
 Database::User::~User()
@@ -83,7 +148,7 @@ Database::User::~User()
     clean_reservations_up();
 }
 
-void Database::User::deposit(float amount)
+void Database::User::deposit(long double amount)
 {
     wallet.amount += amount;
     wallet.transactions.push_front(wallet.amount);
@@ -157,9 +222,9 @@ void Database::User::set_rating(Hotel *hotel, Hotel::Rating *rating)
     ratings[hotel] = rating;
 }
 
-void Database::User::set_manual_weights(const ManualWeights &manual_weights_obj)
+void Database::User::set_manual_weights(const Weights &manual_weights_obj)
 {
-    if(manual_weights.activity == ConstNames::Inactive_Mode){
+    if(manual_weights_obj.activity == ConstNames::Inactive_Mode){
         this->manual_weights.activity = ConstNames::Inactive_Mode;
     }
     else
@@ -213,21 +278,21 @@ void Database::User::delete_filter()
     filters.clear();
 }
 
-bool Database::User::can_pay(float cost)
+bool Database::User::can_pay(long double cost)
 {
     if(wallet.amount < cost)
         return false;
     return true;
 }
 
-Database::User::ManualWeights Database::User::get_manual_weights() { return manual_weights;}
+Database::User::Weights Database::User::get_manual_weights() { return manual_weights;}
 
-void Database::User::add_reserve_case(Hotel* hotel, Hotel::v_room& b_rooms, int check_in, int check_out, float price)
+void Database::User::add_reserve_case(Hotel* hotel, Hotel::v_room& b_rooms, int check_in, int check_out, long double price)
 {
     booked_rooms.push_front(new ReserveCase(hotel, b_rooms, price, check_in, check_out, id_reserve_list));
 }
 
-void Database::User::pay_cost(float cost)
+void Database::User::pay_cost(long double cost)
 {
     wallet.amount -= cost;
     wallet.transactions.push_front(wallet.amount);
@@ -279,10 +344,19 @@ string Database::User::generate_id()
 
 void Database::User::sort_hotels(Database::l_hotels &hotels)
 {
-    hotels.sort([&] (const Hotel* h1, const Hotel* h2) -> bool
+    hotels.sort([&] (Hotel* h1, Hotel* h2) -> bool
     {
-        int cmp_res = h1->comparator(sort_info.property, h2);
-        if(cmp_res)    return (cmp_res == ConstNames::Smaller_cmp) ^ sort_info.mode;
+        if(sort_info.property == Hotel::SortProperty::SP_RatingPersonal)
+        {
+            auto hotels_ratings = get_ratings_of_hotels(h1, h2);
+            int cmp_res = Hotel::comparator(hotels_ratings.first, hotels_ratings.second);
+            if(cmp_res) return (cmp_res == ConstNames::Smaller_cmp) ^ sort_info.mode;
+        }
+        else
+        {
+            int cmp_res = h1->comparator(sort_info.property, h2);
+            if(cmp_res)    return (cmp_res == ConstNames::Smaller_cmp) ^ sort_info.mode;
+        }
         return h1->id < h2->id;
     });
 }
@@ -318,4 +392,66 @@ bool Database::User::the_default_filter_applied()
     if(default_filter != filters.end())
         return filters[FilterMode::DefaultAvgPrice]->get_activity_status();
     return false;
+}
+
+pair_floats Database::User::get_ratings_of_hotels(Hotel* h1, Hotel* h2)
+{
+    if(manual_weights.activity)
+        return make_pair(h1->calculate_avg_weighted(manual_weights.weights), h2->calculate_avg_weighted(manual_weights.weights));
+    if(ratings.size() < ConstNames::Minimum_Ratings_Number)
+        throw Exception(ConstNames::Insufficient_Ratings_msg);
+    if(already_rated(h1) && already_rated(h2))
+        return make_pair(get_overall_hotel_rating(h1), get_overall_hotel_rating(h2));
+    if(already_rated(h1) || already_rated(h2))
+    {
+        auto pair = get_pair_of_hotels_and_ratings(h1, h2);
+        auto weights = calculate_rating();
+        return make_pair(pair.first, (pair.second)->calculate_avg_weighted(weights.weights));
+    }
+    auto i_weights = calculate_rating();
+    auto j_weights = calculate_rating();
+    return make_pair(h1->calculate_avg_weighted(i_weights.weights), h2->calculate_avg_weighted(j_weights.weights));
+}
+
+bool Database::User::already_rated(Hotel *hotel)
+{
+    auto searched_hotel = ratings.find(hotel);
+    if(searched_hotel != ratings.end())
+        return true;
+    return false;
+}
+
+long double Database::User::get_overall_hotel_rating(Hotel *hotel)
+{
+    auto rating = ratings.find(hotel);
+    return (*rating).second->get_overall_rating();
+}
+
+std::pair<long double, Database::Hotel*> Database::User::get_pair_of_hotels_and_ratings(Database::Hotel* h1, Database::Hotel* h2)
+{
+    if(already_rated(h1) && !already_rated(h2))
+        return make_pair(get_overall_hotel_rating(h1), h2);
+    return make_pair(get_overall_hotel_rating(h2), h1);
+}
+
+Database::User::Weights Database::User::calculate_rating()
+{
+    if(this->estimated_weights == Weights())
+    {
+        // cerr << "First Time\n";
+        auto backend = Backend::get_instance();
+        this->estimated_weights = backend->calculate_weights(this, get_ratings());
+        if(estimated_weights == Weights())
+            cerr << "RIDI: " << estimated_weights.weights.location << endl;
+        return estimated_weights;
+    }
+    return estimated_weights;
+}
+
+Database::Hotel::v_rating Database::User::get_ratings()
+{
+    auto temp = Hotel::v_rating();
+    for(auto rating_itr = ratings.begin(); rating_itr != ratings.end(); rating_itr++)
+        temp.push_back((*rating_itr).second);
+    return temp;
 }

@@ -41,14 +41,14 @@ public:
     virtual void delete_reserve(int check_in, int check_out);
 
 protected:
-    Room(std::string id, enum Room_Class type, float price);
+    Room(std::string id, enum Room_Class type, long double price);
     virtual std::string generate_id() = 0;
     virtual bool overlap(ReserveRoom reserve, int check_in, int check_out) const;
     virtual void booked(int check_in, int check_out);
 
 protected:
     Room_Class type;
-    float price;
+    long double price;
     t_id id;
     v_reserve reserves;
 };

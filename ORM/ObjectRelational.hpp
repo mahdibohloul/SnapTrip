@@ -51,7 +51,7 @@ public:
     void post_comment(Database::User* user, std::string hotel_id, std::string comment);
     void logout_user(Database::User* user);
     void post_rating(Database::Hotel::RatingInfo& rating_info);
-    void post_manual_weights(Database::User::ManualWeights& manual_weights, Database::User* user);
+    void post_manual_weights(Database::User::Weights& manual_weights, Database::User* user);
 
     bool authentication(Database::UserInfo user_info, const std::string mode, const Database::l_users& users = Database::l_users());
 

@@ -12,9 +12,9 @@ DefaultAvgPriceFilter::DefaultAvgPriceFilter(const Database::User::l_booked& boo
 DefaultAvgPriceFilter::~DefaultAvgPriceFilter() {}
 
 
-float DefaultAvgPriceFilter::calculate_average(const Database::User::l_booked& booked_rooms)
+long double DefaultAvgPriceFilter::calculate_average(const Database::User::l_booked& booked_rooms)
 {
-    float cost = 0.0f;
+    long double cost = 0.0f;
     int quantity = 0;
     for(auto reserve : booked_rooms)
     {
@@ -26,9 +26,9 @@ float DefaultAvgPriceFilter::calculate_average(const Database::User::l_booked& b
     return cost / quantity;
 }
 
-float DefaultAvgPriceFilter::calculate_average_deviation(const Database::User::l_booked& booked_rooms)
+long double DefaultAvgPriceFilter::calculate_average_deviation(const Database::User::l_booked& booked_rooms)
 {
-    float deviation = 0.0f, sum = 0.0f;
+    long double deviation = 0.0f, sum = 0.0f;
     int quantity = 0;
     for(auto reserve : booked_rooms)
     {
@@ -50,9 +50,9 @@ void DefaultAvgPriceFilter::filter(Database::l_hotels& hotels)
     }
 }
 
-bool DefaultAvgPriceFilter::in_range(float hotel_avg_price)
+bool DefaultAvgPriceFilter::in_range(long double hotel_avg_price)
 {
-    float abs_val = abs(hotel_avg_price - average);
+    long double abs_val = abs(hotel_avg_price - average);
     if(abs_val <= (ConstNames::Default_Filter_Coefficient * average_deviation))
         return true;
     return false;

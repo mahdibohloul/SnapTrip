@@ -11,7 +11,7 @@
 using namespace std;
 
 Database::HotelInfo::HotelInfo(info_t u_id, info_t prop_name, num_t hotel_r, info_t hotel_ov, info_t prop_amenities,
-                  info_t i_city, float latude, float lotude, info_t i_url, num_t n_s_r, num_t n_d_r,
+                  info_t i_city, long double latude, long double lotude, info_t i_url, num_t n_s_r, num_t n_d_r,
                   num_t n_l_r, num_t n_p_r, price_t s_p, price_t d_p, price_t l_p, price_t p_p)
 {
     unique_id = u_id;
@@ -110,7 +110,7 @@ void Database::increase_user_amount(const UserInfo &user_info, User *user)
     user->deposit(user_info.amount);
 }
 
-list<float> Database::get_account_information(const UserInfo &user_info, User *user)
+list<long double> Database::get_account_information(const UserInfo &user_info, User *user)
 {
     return user->get_account_information(user_info.no_transactions);
 }

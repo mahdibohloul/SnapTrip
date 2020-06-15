@@ -5,6 +5,7 @@
 #include "./Rooms/LuxuryRoom.hpp"
 #include "User/User.hpp"
 #include "../Exception/Exception.hpp"
+#include "../Business-Logic/Backend.hpp"
 #include "Rating.hpp"
 #include <sstream>
 #include <iomanip>
@@ -100,9 +101,9 @@ bool Database::Hotel::have_room_with_this_specifications(int type, int quantity,
     return false;
 }
 
-float Database::Hotel::cost_to_reserve(int type, int quantity) const
+long double Database::Hotel::cost_to_reserve(int type, int quantity) const
 {
-    float cost = 0.0f;
+    long double cost = 0.0f;
     int q = 0;
     for(auto room_itr = rooms.begin(); room_itr != rooms.end() && q < quantity; room_itr++)
     {
@@ -162,12 +163,12 @@ Database::Hotel::RatingInfo Database::Hotel::calculate_avg_ratings()
     return rating_info;
 }
 
-float Database::Hotel::calculate_avg_price(const HotelInfo& info)
+long double Database::Hotel::calculate_avg_price(const HotelInfo& info)
 {
-    vector<float> prices {info.standard_room_price, info.deluxe_room_price, info.luxury_room_price, info.premium_room_price};
-    float sum = 0;
+    vector<long double> prices {info.standard_room_price, info.deluxe_room_price, info.luxury_room_price, info.premium_room_price};
+    long double sum = 0;
     int q = 0;
-    for(float f : prices)
+    for(long double f : prices)
     {
         if(f != 0)
         {
@@ -192,7 +193,7 @@ Database::Hotel::v_room Database::Hotel::prepare_rooms(const Database::HotelInfo
 }
 
 template<class room>
-void Database::Hotel::construct_rooms(v_room& rooms, int quantity, float price)
+void Database::Hotel::construct_rooms(v_room& rooms, int quantity, long double price)
 {
     if(quantity == ConstNames::No_Room)
         return;
@@ -201,14 +202,14 @@ void Database::Hotel::construct_rooms(v_room& rooms, int quantity, float price)
 
 }
 
-float Database::Hotel::get_avg_price() const
+long double Database::Hotel::get_avg_price() const
 {
     return avg_price;
 }
 
-map<int, float> Database::Hotel::get_map_of_rooms_price() const
+map<int, long double> Database::Hotel::get_map_of_rooms_price() const
 {
-    map<int, float> map_of_price;
+    map<int, long double> map_of_price;
     map_of_price.insert(make_pair(Room::Room_Class::Standard, 0));
     map_of_price.insert(make_pair(Room::Room_Class::Deluxe, 0));
     map_of_price.insert(make_pair(Room::Room_Class::Luxury, 0));
@@ -216,7 +217,7 @@ map<int, float> Database::Hotel::get_map_of_rooms_price() const
     for(auto room_itr = rooms.begin(); room_itr != rooms.end(); room_itr++)
     {
         Room::Room_Class type = (*room_itr)->type;
-        float price = (*room_itr)->price;
+        long double price = (*room_itr)->price;
         map_of_price[type] = price;
     }
     return map_of_price;
@@ -283,7 +284,7 @@ info_t Database::Hotel::get_hotel_overview() {return hotel_overview; }
 
 info_t Database::Hotel::get_amenities() { return property_amenities; }
 
-pair<float, float> Database::Hotel::get_coordinates() { return make_pair(geo_coordinates.latitude, geo_coordinates.longitude); }
+pair<long double, long double> Database::Hotel::get_coordinates() { return make_pair(geo_coordinates.latitude, geo_coordinates.longitude); }
 
 int Database::Hotel::comparator(enum SortProperty property, const Hotel *right_side) const
 {
@@ -308,4 +309,21 @@ template<typename T>
 int Database::Hotel::comparator(const T& left_side, const T& hand_side)
 {
     return left_side < hand_side ? ConstNames::Smaller_cmp : left_side == hand_side ? ConstNames::Equal_cmp : ConstNames::Greater_cmp;
+}
+
+long double Database::Hotel::calculate_avg_weighted(const RatingInfo &weights)
+{
+    long double sum = 0.0f;
+    long double f_weights = 0.0f;
+    sum += default_rating.location * weights.location;
+    sum += default_rating.cleanliness * weights.cleanliness;
+    sum += default_rating.staff * weights.staff;
+    sum += default_rating.facilities * weights.facilities;
+    sum += default_rating.value_for_money * weights.value_for_money;
+    f_weights += weights.location;
+    f_weights += weights.cleanliness;
+    f_weights += weights.staff;
+    f_weights += weights.facilities;
+    f_weights += weights.value_for_money;
+    return sum / f_weights;
 }

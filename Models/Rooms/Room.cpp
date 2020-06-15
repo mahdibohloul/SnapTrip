@@ -8,7 +8,7 @@ Database::Hotel::Room::m_room_to_string Database::Hotel::Room::room_string {
     make_pair(Room_Class::Premium, ConstNames::PremiumRoom)
 };
 
-Database::Hotel::Room::Room(std::string id, enum Room_Class type, float price)
+Database::Hotel::Room::Room(std::string id, enum Room_Class type, long double price)
 {
     this->id = id;
     this->type = type;

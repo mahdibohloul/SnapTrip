@@ -3,6 +3,8 @@
 
 #include "User/User.hpp"
 
+typedef std::vector<long double> v_double;
+
 class Database::Hotel::Rating
 {
 public:
@@ -10,17 +12,19 @@ public:
 
 public:
     ~Rating();
+    long double get_overall_rating();
+    long double get_sum_weighted(v_double weights);
 
 private:
     Rating(const RatingInfo& rating_info);
 
 private:
-    float location;
-    float cleanliness;
-    float staff;
-    float facilities;
-    float value_for_money;
-    float overall_rating;
+    long double location;
+    long double cleanliness;
+    long double staff;
+    long double facilities;
+    long double value_for_money;
+    long double overall_rating;
 };
 
 #endif

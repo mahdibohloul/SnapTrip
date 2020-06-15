@@ -5,6 +5,7 @@ using namespace std;
 
 int main(int argc, char const *argv[])
 {
+    srand(time(0));
     Content file_name = argv[ConstNames::Hotel_File_Addr_Position];
     Content rating_file = argv[ConstNames::Rating_File_Addr_Position];
     UserInterface* user_interface = UserInterface::get_instance();
