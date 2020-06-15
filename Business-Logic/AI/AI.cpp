@@ -25,9 +25,9 @@ Database::User::Weights Backend::AI::get_calculated_weights(Database::Hotel::v_r
 
 v_double Backend::AI::generate_random_weights()
 {
-    v_double random_number(5, 1);
-    // for(int i = ConstNames::Minimum_Weights_Number; i <= ConstNames::Maximum_Weights_Number; i++)
-    //     random_number.push_back(ConstNames::Minimum_Weights_Number + static_cast<long double>(rand() / static_cast<long double>(RAND_MAX / (ConstNames::Maximum_Weights_Number - ConstNames::Minimum_Weights_Number))));
+    v_double random_number;
+    for(int i = ConstNames::Minimum_Weights_Number; i <= ConstNames::Maximum_Weights_Number; i++)
+        random_number.push_back(ConstNames::Minimum_Weights_Number + static_cast<long double>(rand() / static_cast<long double>(RAND_MAX / (ConstNames::Maximum_Weights_Number - ConstNames::Minimum_Weights_Number))));
     return random_number;
 }
 
