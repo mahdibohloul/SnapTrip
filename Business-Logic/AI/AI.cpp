@@ -34,7 +34,7 @@ v_double Backend::AI::generate_random_weights()
 v_double Backend::AI::calculate_weights(v_double& weights, Database::Hotel::v_rating ratings)
 {
     int i = 0;
-    while(i < 5)
+    while(i < 1000)
     {
         auto dirivatives = v_double(ConstNames::Maximum_Weights_Number, ConstNames::Minimum_Dirivative_Amount);
         auto rating_itr = ratings.begin();
@@ -52,10 +52,10 @@ v_double Backend::AI::calculate_weights(v_double& weights, Database::Hotel::v_ra
 v_double Backend::AI::calculate_dirivatives(v_double weights, Database::Hotel::v_rating::iterator rating_itr, v_double& dirivatives)
 {
     for(int count = 0; count < ConstNames::Maximum_Weights_Number; count++){
-        if (count == 0)
-        {
-            cerr << count << "-> " << calculate_dirivative(weights, rating_itr, count) << ",\tweight: " << weights[count] << endl;
-        }
+        // if (count == 0)
+        // {
+        //     cerr << count << "-> " << calculate_dirivative(weights, rating_itr, count) << ",\tweight: " << weights[count] << endl;
+        // }
         dirivatives[count] += calculate_dirivative(weights, rating_itr, count);
     }
     return dirivatives;

@@ -1,4 +1,5 @@
 #include "Rating.hpp"
+#include <iostream>
 using namespace std;
 
 Database::Hotel::Rating::Rating(const RatingInfo& rating_info)
@@ -17,7 +18,7 @@ long double Database::Hotel::Rating::get_overall_rating() { return overall_ratin
 
 long double Database::Hotel::Rating::get_sum_weighted(v_double weights)
 {
-    long double sum = 0;
+    long double sum = 0.0;
     sum += location * weights[0]; sum += cleanliness * weights[1]; sum += staff * weights[2]; sum += facilities * weights[3]; sum += value_for_money * weights[4];
     return sum;
 }

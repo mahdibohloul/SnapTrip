@@ -831,7 +831,8 @@ long double Backend::calculate_weighted_average(Database::User::Weights weights,
 long double Backend::calculate_weighted_average(v_double weights, Database::Hotel::v_rating::iterator rating_itr)
 {
     auto sum = (*rating_itr)->get_sum_weighted(weights);
-    auto weighted_sum = accumulate(weights.begin(), weights.end(), 0);
+    auto weighted_sum = accumulate(weights.begin(), weights.end(), 0.0);
+    // cerr << "sum: " << sum << "    makhraj: " << weighted_sum << endl;
     return sum / weighted_sum;
 }
 

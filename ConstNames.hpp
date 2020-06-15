@@ -45,7 +45,7 @@ namespace ConstNames
     const long double Max_Rate = 5.0;
     const long double Fifty_Percent = 0.5;
     const long double Minimum_Dirivative_Amount = 0.00;
-    const long double Step_Size = 1.0;
+    const long double Step_Size = 1;
     const long double Epsilon = 0.0001;
 
     const std::string Empty_Str = "";
