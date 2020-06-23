@@ -73,11 +73,8 @@ public:
             activity = i_activity;
         }
         bool operator==(const Weights& second_weights);
-        Weights& increase_this_var(const long double amount, const int which);
-        Weights& operator-(const v_double numbers);
-        // Weights& operator=(const Weights& second);
         long double operator[](const int which);
-        void initialize_weights(v_double);
+        void initialize_weights(const v_double i_weights);
     };
     class Filter;
     class ReserveCase;
@@ -111,6 +108,7 @@ public:
     void deactivate_default_filter();
     void delete_reserve(int id);
     Weights get_manual_weights();
+    Weights get_estimated_weights();
 
     bool can_pay(long double cost);
     bool the_default_filter_applied();
@@ -137,7 +135,6 @@ private:
     void clean_reservations_up();
 
     pair_floats get_ratings_of_hotels(Hotel* h1, Hotel* h2);
-    std::pair<long double, Database::Hotel*> get_pair_of_hotels_and_ratings(Database::Hotel* h1, Database::Hotel* h2);
 
     Weights calculate_rating();
     long double calculate_overall_rating(Weights weights);

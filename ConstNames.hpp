@@ -19,7 +19,7 @@ namespace ConstNames
     const int Minimum_of_Characters = 1;
     const int No_Room = 0;
     const int One_Night = 1;
-    const int Minimum_Ratings_Number = 1;
+    const int Minimum_Ratings_Number = 5;
     const int Hotel_File_Addr_Position = 1;
     const int Rating_File_Addr_Position = 2;
     const int Minimum_No_Transactions = 0;
@@ -29,6 +29,7 @@ namespace ConstNames
     const int Minimum_Weights_Number = 1;
     const int Minimum_Hotel_Reserve = 1;
     const int Maximum_Hotel_Reserve = 30;
+    const int Iterations_Number = 10000;
     const int Default_Filter_Coefficient = 2;
     const int Default_Exponent_Dirivative = 2;
     const int Default_Star = 0;
@@ -45,7 +46,7 @@ namespace ConstNames
     const long double Max_Rate = 5.0;
     const long double Fifty_Percent = 0.5;
     const long double Minimum_Dirivative_Amount = 0.00;
-    const long double Step_Size = 1;
+    const long double Step_Size = 5.0;
     const long double Epsilon = 0.0001;
 
     const std::string Empty_Str = "";
@@ -93,6 +94,7 @@ namespace ConstNames
     const std::string GET_Wallet_Order = "GET Wallet";
     const std::string Sort_Order = "sort";
     const std::string Manual_Weights_Order = "manual_weights";
+    const std::string Estimated_Weights_Order = "estimated_weights";
 
     const std::string ID = "id";
     const std::string Email = "email";

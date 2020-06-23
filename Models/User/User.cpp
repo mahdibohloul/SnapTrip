@@ -78,52 +78,13 @@ long double Database::User::Weights::operator[](const int which)
     }
 }
 
-// Database::User::Weights& Database::User::Weights::operator=(const Weights &second)
-// {
-
-// }
-
-Database::User::Weights& Database::User::Weights::increase_this_var(const long double amount, const int which)
+void Database::User::Weights::initialize_weights(v_double i_weights)
 {
-    switch(which)
-    {
-        case WE_Location:
-            (*this).weights.location += amount;
-            break;
-        case WE_Cleanliness:
-            (*this).weights.cleanliness += amount;
-            break;
-        case WE_Staff:
-            (*this).weights.staff += amount;
-            break;
-        case WE_Facilities:
-            (*this).weights.staff += amount;
-            break;
-        case WE_Value:
-            (*this).weights.value_for_money += amount;
-            break;
-    }
-    return *this;
-}
-
-Database::User::Weights& Database::User::Weights::operator-(const v_double numbers)
-{
-    weights.location -= numbers[0];
-    weights.cleanliness -= numbers[1];
-    weights.staff -= numbers[2];
-    weights.facilities -= numbers[3];
-    weights.value_for_money -= numbers[4];
-    return *this;
-}
-
-
-void Database::User::Weights::initialize_weights(std::vector<long double> temp)
-{
-    weights.location = temp[0];
-    weights.cleanliness = temp[1];
-    weights.staff = temp[2];
-    weights.facilities = temp[3];
-    weights.value_for_money = temp[4];
+    weights.location = i_weights[WE_Location];
+    weights.cleanliness = i_weights[WE_Cleanliness];
+    weights.staff = i_weights[WE_Staff];
+    weights.facilities = i_weights[WE_Facilities];
+    weights.value_for_money = i_weights[WE_Value];
 }
 
 Database::User::User(const UserInfo& info)
@@ -350,7 +311,7 @@ void Database::User::sort_hotels(Database::l_hotels &hotels)
         {
             auto hotels_ratings = get_ratings_of_hotels(h1, h2);
             int cmp_res = Hotel::comparator(hotels_ratings.first, hotels_ratings.second);
-            if(cmp_res) return (cmp_res == ConstNames::Smaller_cmp) ^ sort_info.mode;
+            if(cmp_res)    return (cmp_res == ConstNames::Smaller_cmp) ^ sort_info.mode;
         }
         else
         {
@@ -398,19 +359,19 @@ pair_floats Database::User::get_ratings_of_hotels(Hotel* h1, Hotel* h2)
 {
     if(manual_weights.activity)
         return make_pair(h1->calculate_avg_weighted(manual_weights.weights), h2->calculate_avg_weighted(manual_weights.weights));
-    if(ratings.size() < ConstNames::Minimum_Ratings_Number)
+    else if(ratings.size() < ConstNames::Minimum_Ratings_Number)
         throw Exception(ConstNames::Insufficient_Ratings_msg);
-    if(already_rated(h1) && already_rated(h2))
+    else if(already_rated(h1) && already_rated(h2))
         return make_pair(get_overall_hotel_rating(h1), get_overall_hotel_rating(h2));
-    if(already_rated(h1) || already_rated(h2))
-    {
-        auto pair = get_pair_of_hotels_and_ratings(h1, h2);
-        auto weights = calculate_rating();
-        return make_pair(pair.first, (pair.second)->calculate_avg_weighted(weights.weights));
-    }
-    auto i_weights = calculate_rating();
-    auto j_weights = calculate_rating();
-    return make_pair(h1->calculate_avg_weighted(i_weights.weights), h2->calculate_avg_weighted(j_weights.weights));
+
+    auto weights = calculate_rating();
+    if(already_rated(h1) && !already_rated(h2))
+        return make_pair(get_overall_hotel_rating(h1), h2->calculate_avg_weighted(weights.weights));
+
+    else if(!already_rated(h1) && already_rated(h2))
+        return make_pair(h1->calculate_avg_weighted(weights.weights), get_overall_hotel_rating(h2));
+
+    return make_pair(h1->calculate_avg_weighted(weights.weights), h2->calculate_avg_weighted(weights.weights));
 }
 
 bool Database::User::already_rated(Hotel *hotel)
@@ -427,25 +388,15 @@ long double Database::User::get_overall_hotel_rating(Hotel *hotel)
     return (*rating).second->get_overall_rating();
 }
 
-std::pair<long double, Database::Hotel*> Database::User::get_pair_of_hotels_and_ratings(Database::Hotel* h1, Database::Hotel* h2)
-{
-    if(already_rated(h1) && !already_rated(h2))
-        return make_pair(get_overall_hotel_rating(h1), h2);
-    return make_pair(get_overall_hotel_rating(h2), h1);
-}
-
 Database::User::Weights Database::User::calculate_rating()
 {
+    auto backend = Backend::get_instance();
     if(this->estimated_weights == Weights())
     {
-        // cerr << "First Time\n";
-        auto backend = Backend::get_instance();
         this->estimated_weights = backend->calculate_weights(this, get_ratings());
-        if(estimated_weights == Weights())
-            cerr << "RIDI: " << estimated_weights.weights.location << endl;
-        return estimated_weights;
+        return this->estimated_weights;
     }
-    return estimated_weights;
+    return this->estimated_weights;
 }
 
 Database::Hotel::v_rating Database::User::get_ratings()
@@ -454,4 +405,11 @@ Database::Hotel::v_rating Database::User::get_ratings()
     for(auto rating_itr = ratings.begin(); rating_itr != ratings.end(); rating_itr++)
         temp.push_back((*rating_itr).second);
     return temp;
+}
+
+Database::User::Weights Database::User::get_estimated_weights()
+{
+    if(ratings.size() < ConstNames::Minimum_Ratings_Number)
+        throw Exception(ConstNames::Insufficient_Ratings_msg);
+    return estimated_weights;
 }

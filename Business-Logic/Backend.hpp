@@ -42,6 +42,9 @@ public:
 
     Database::User* get_curr_user();
 
+    v_double get_vector_of_weights(Database::User::Weights weights);
+    v_double get_vector_of_ratings(Database::Hotel::Rating* rating);
+
 private:
     Backend();
     void post_request(data_t data);
@@ -65,6 +68,7 @@ private:
     void get_comment(data_t data);
     void get_rating(data_t data);
     void get_manual_weights(data_t data);
+    void get_estimated_weights(data_t data);
     void delete_filter(data_t data);
     void delete_reserve(data_t data);
     void booked_out(Database::User::ReserveInfo& reserve_info);
@@ -107,8 +111,6 @@ private:
     Database::User::SortInfo fill_sort_info(const data_t& data);
     Database::User::Weights fill_manual_weights_info(const data_t& data);
 
-    v_double get_vector_of_weights(Database::User::Weights weights);
-    v_double get_vector_of_ratings(Database::Hotel::Rating* rating);
 
     template<class T>
     hash_t hashing(T raw);

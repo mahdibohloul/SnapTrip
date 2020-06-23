@@ -59,6 +59,7 @@ public:
     void get_hotels(Database::User* user);
     void get_hotels(info_t hotel_id);
     void get_manual_weights(Database::User* user);
+    void get_estimated_weights(Database::User* user);
     void booked_out(Database::User::ReserveInfo& reserve_info, Database::User* user);
     void get_reserve(Database::User* user);
     void get_comment(std::string hotel_id);

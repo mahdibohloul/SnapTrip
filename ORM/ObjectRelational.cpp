@@ -200,6 +200,12 @@ void ObjectRelational::get_manual_weights(Database::User *user)
     responding(manual_weights);
 }
 
+void ObjectRelational::get_estimated_weights(Database::User *user)
+{
+    auto estimated_weights = user->get_estimated_weights();
+    responding(backend->get_vector_of_weights(estimated_weights));
+}
+
 template<class T>
 void API::responding(T response)
 {

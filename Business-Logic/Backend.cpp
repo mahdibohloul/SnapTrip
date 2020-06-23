@@ -349,6 +349,17 @@ void Backend::get_manual_weights(data_t data)
         throw Exception(ConstNames::Bad_Request_msg);
 }
 
+void Backend::get_estimated_weights(data_t data)
+{
+    if(data.empty())
+    {
+        check_access(ConstNames::Online_Mode);
+        object_relational->get_estimated_weights(*online_users.begin());
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
+}
+
 void Backend::delete_filter(data_t data)
 {
     if(data.empty())
@@ -771,6 +782,7 @@ void Backend::construct_maps()
     func_get_map.insert(make_pair(ConstNames::Comment_Order, &Backend::get_comment));
     func_get_map.insert(make_pair(ConstNames::Rating_Order, &Backend::get_rating));
     func_get_map.insert(make_pair(ConstNames::Manual_Weights_Order, &Backend::get_manual_weights));
+    func_get_map.insert(make_pair(ConstNames::Estimated_Weights_Order, &Backend::get_estimated_weights));
     func_delete_map.insert(make_pair(ConstNames::Filter_Order, &Backend::delete_filter));
     func_delete_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::delete_reserve));
 }
@@ -816,7 +828,6 @@ Database::User* Backend::get_curr_user() { return *online_users.begin(); }
 Database::User::Weights Backend::calculate_weights(Database::User* user, Database::Hotel::v_rating ratings)
 {
     auto ai = new AI(user);
-    // cerr << (ai->get_calculated_weights(ratings)).weights.location << endl;
     return ai->get_calculated_weights(ratings);
 }
 
@@ -832,7 +843,6 @@ long double Backend::calculate_weighted_average(v_double weights, Database::Hote
 {
     auto sum = (*rating_itr)->get_sum_weighted(weights);
     auto weighted_sum = accumulate(weights.begin(), weights.end(), 0.0);
-    // cerr << "sum: " << sum << "    makhraj: " << weighted_sum << endl;
     return sum / weighted_sum;
 }
 

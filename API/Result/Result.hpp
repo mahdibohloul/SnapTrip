@@ -17,7 +17,8 @@ public:
         Hotels,
         GET_Comments,
         Average_Ratings,
-        Manual_Weights
+        Manual_Weights,
+        Estimated_Weights
     };
     typedef std::string (API::Result::*result_method)(void);
 
@@ -34,6 +35,7 @@ private:
     Result(Database::l_comments comments);
     Result(Database::Hotel::RatingInfo avg_ratings);
     Result(Database::User::Weights manual_weights);
+    Result(v_double estimated_weights);
 
     void construct_map();
 
@@ -48,6 +50,7 @@ private:
     std::string get_average_ratings();
     std::string get_extra_info();
     std::string get_manual_weights();
+    std::string get_estimated_weights();
 
 private:
     std::string result_msg;
@@ -61,6 +64,7 @@ private:
     ResultType type;
     std::map<ResultType, result_method> map_of_results;
     Database::User::Weights manual_weights;
+    v_double estimated_weights;
 
 };
 
