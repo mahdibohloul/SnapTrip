@@ -11,12 +11,14 @@
 typedef std::string Content;
 typedef std::string request_t;
 typedef long long hash_t;
+typedef std::vector<long double> v_double;
 
 class ObjectRelational;
 
 class Backend
 {
 public:
+    class AI;
     typedef std::vector<std::string> data_t;
     typedef void (Backend::*request_method) (data_t);
     typedef std::map<request_t, request_method> map_request;
@@ -31,11 +33,17 @@ public:
     ~Backend();
     static Backend* get_instance();
     static void release();
-
+    static long double calculate_weighted_average(Database::User::Weights weights, Database::Hotel::v_rating::iterator rating_itr);
+    static long double calculate_weighted_average(v_double weights, Database::Hotel::v_rating::iterator rating_itr);
     data_t parse_content(Content content, char separator);
     void command_processor(data_t command_data);
 
+    Database::User::Weights calculate_weights(Database::User* user, Database::Hotel::v_rating ratings);
+
     Database::User* get_curr_user();
+
+    v_double get_vector_of_weights(Database::User::Weights weights);
+    v_double get_vector_of_ratings(Database::Hotel::Rating* rating);
 
 private:
     Backend();
@@ -60,6 +68,7 @@ private:
     void get_comment(data_t data);
     void get_rating(data_t data);
     void get_manual_weights(data_t data);
+    void get_estimated_weights(data_t data);
     void delete_filter(data_t data);
     void delete_reserve(data_t data);
     void booked_out(Database::User::ReserveInfo& reserve_info);
@@ -100,7 +109,8 @@ private:
     Database::User::ReserveInfo fill_reserve_info(const data_t& data);
     Database::Hotel::RatingInfo fill_rating_info(const data_t& data, const std::string mode = ConstNames::Rating_Order);
     Database::User::SortInfo fill_sort_info(const data_t& data);
-    Database::User::ManualWeights fill_manual_weights_info(const data_t& data);
+    Database::User::Weights fill_manual_weights_info(const data_t& data);
+
 
     template<class T>
     hash_t hashing(T raw);

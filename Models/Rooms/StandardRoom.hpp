@@ -6,7 +6,7 @@
 class StandardRoom : public Database::Hotel::Room
 {
 public:
-    StandardRoom(float price);
+    StandardRoom(long double price);
     ~StandardRoom();
     std::string generate_id();
     void reset_id();

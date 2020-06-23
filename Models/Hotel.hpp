@@ -25,23 +25,24 @@ public:
         SP_LuxuryRoomPrice,
         SP_PremiumRoomPrice,
         SP_AvgRoomPrice,
-        SP_RatingOverall
+        SP_RatingOverall,
+        SP_RatingPersonal
     };
     struct Coordinates
     {
-        float longitude;
-        float latitude;
-        Coordinates(float x, float y) : longitude(x), latitude(y) {}
+        long double longitude;
+        long double latitude;
+        Coordinates(long double x, long double y) : longitude(x), latitude(y) {}
     };
     struct RatingInfo
     {
         std::string hotel_id;
-        float location;
-        float cleanliness;
-        float staff;
-        float facilities;
-        float value_for_money;
-        float overall_rating;
+        long double location;
+        long double cleanliness;
+        long double staff;
+        long double facilities;
+        long double value_for_money;
+        long double overall_rating;
         User* user;
         RatingInfo();
         bool operator==(const RatingInfo& second);
@@ -50,6 +51,7 @@ public:
     class Rating;
     typedef std::vector<Room*> v_room;
     typedef std::map<User*, Rating*> m_rating;
+    typedef std::vector<Rating*> v_rating;
 
 public:
     ~Hotel();
@@ -63,12 +65,13 @@ public:
     info_t get_amenities();
     info_t get_num_of_rooms();
     info_t get_rooms_price();
-    std::pair<float, float> get_coordinates();
+    std::pair<long double, long double> get_coordinates();
 
     bool have_room_with_this_specifications(int type, int quantity, int check_in, int check_out) const;
 
-    float cost_to_reserve(int type, int quantity) const;
-    float get_avg_price() const;
+    long double cost_to_reserve(int type, int quantity) const;
+    long double get_avg_price() const;
+    long double calculate_avg_weighted(const RatingInfo& weights);
 
     int get_star() const;
     int comparator(enum SortProperty property, const Hotel* right_side) const;
@@ -78,6 +81,8 @@ public:
 
     RatingInfo get_avg_ratings();
 
+    template<typename T>
+    static int comparator(const T& left_side, const T& right_side);
 private:
     Hotel(const HotelInfo& info);
 
@@ -85,22 +90,20 @@ private:
 
     bool in_range(Room* room, int check_in, int check_out, int type) const;
 
-    template<typename T>
-    static int comparator(const T& left_side, const T& right_side);
 
     template<class room>
-    void construct_rooms(v_room& rooms, int quantity, float price);
+    void construct_rooms(v_room& rooms, int quantity, long double price);
 
     v_room booked_out(User* user, int type, int quantity, int check_in, int check_out);
 
-    float calculate_avg_price(const HotelInfo& info);
+    long double calculate_avg_price(const HotelInfo& info);
 
     RatingInfo calculate_avg_ratings();
 
     void clean_rooms_up();
     void clean_ratings_up();
 
-    std::map<int, float> get_map_of_rooms_price() const;
+    std::map<int, long double> get_map_of_rooms_price() const;
 private:
     t_id id;
     info_t property_name;
@@ -113,7 +116,7 @@ private:
     m_rating map_ratings;
     RatingInfo default_rating;
     int hotel_star_rating;
-    float avg_price;
+    long double avg_price;
 };
 
 #endif

@@ -11,12 +11,13 @@ ROOMS_DIR = ${DB_DIR}/Rooms
 USER_DIR = ${DB_DIR}/User
 FILTER_DIR = ${DB_DIR}/Filters
 RESULT_DIR = ${API_DIR}/Result
+AI_DIR = ${BACKEND_DIR}/AI
 
 
 all: utrip.out
 
-utrip.out: ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BUILD_DIR}/Room.o ${BUILD_DIR}/StandardRoom.o ${BUILD_DIR}/DeluxeRoom.o ${BUILD_DIR}/LuxuryRoom.o ${BUILD_DIR}/PremiumRoom.o ${BUILD_DIR}/ReserveCase.o ${BUILD_DIR}/User.o ${BUILD_DIR}/Filter.o ${BUILD_DIR}/CityFilter.o ${BUILD_DIR}/AvgPriceFilter.o ${BUILD_DIR}/AdvancedFilter.o ${BUILD_DIR}/Rating.o ${BUILD_DIR}/Comment.o ${BUILD_DIR}/API.o ${BUILD_DIR}/ObjectRelational.o ${BUILD_DIR}/UserInterface.o ${BUILD_DIR}/Backend.o ${BUILD_DIR}/Exception.o ${BUILD_DIR}/StarRangeFilter.o ${BUILD_DIR}/Result.o ${BUILD_DIR}/DefaultAvgPriceFilter.o | build_dir
-	${CC_EXEC} ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BUILD_DIR}/Room.o ${BUILD_DIR}/StandardRoom.o ${BUILD_DIR}/DeluxeRoom.o ${BUILD_DIR}/LuxuryRoom.o ${BUILD_DIR}/PremiumRoom.o ${BUILD_DIR}/ReserveCase.o ${BUILD_DIR}/User.o ${BUILD_DIR}/Filter.o ${BUILD_DIR}/CityFilter.o ${BUILD_DIR}/AvgPriceFilter.o ${BUILD_DIR}/AdvancedFilter.o ${BUILD_DIR}/Rating.o ${BUILD_DIR}/Comment.o ${BUILD_DIR}/API.o ${BUILD_DIR}/ObjectRelational.o ${BUILD_DIR}/UserInterface.o ${BUILD_DIR}/Backend.o ${BUILD_DIR}/Exception.o ${BUILD_DIR}/StarRangeFilter.o ${BUILD_DIR}/Result.o ${BUILD_DIR}/DefaultAvgPriceFilter.o -o utrip.out
+utrip.out: ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BUILD_DIR}/Room.o ${BUILD_DIR}/StandardRoom.o ${BUILD_DIR}/DeluxeRoom.o ${BUILD_DIR}/LuxuryRoom.o ${BUILD_DIR}/PremiumRoom.o ${BUILD_DIR}/ReserveCase.o ${BUILD_DIR}/User.o ${BUILD_DIR}/Filter.o ${BUILD_DIR}/CityFilter.o ${BUILD_DIR}/AvgPriceFilter.o ${BUILD_DIR}/AdvancedFilter.o ${BUILD_DIR}/Rating.o ${BUILD_DIR}/Comment.o ${BUILD_DIR}/API.o ${BUILD_DIR}/ObjectRelational.o ${BUILD_DIR}/UserInterface.o ${BUILD_DIR}/Backend.o ${BUILD_DIR}/Exception.o ${BUILD_DIR}/StarRangeFilter.o ${BUILD_DIR}/Result.o ${BUILD_DIR}/DefaultAvgPriceFilter.o ${BUILD_DIR}/AI.o | build_dir
+	${CC_EXEC} ${BUILD_DIR}/main.o ${BUILD_DIR}/Database.o ${BUILD_DIR}/Hotel.o ${BUILD_DIR}/Room.o ${BUILD_DIR}/StandardRoom.o ${BUILD_DIR}/DeluxeRoom.o ${BUILD_DIR}/LuxuryRoom.o ${BUILD_DIR}/PremiumRoom.o ${BUILD_DIR}/ReserveCase.o ${BUILD_DIR}/User.o ${BUILD_DIR}/Filter.o ${BUILD_DIR}/CityFilter.o ${BUILD_DIR}/AvgPriceFilter.o ${BUILD_DIR}/AdvancedFilter.o ${BUILD_DIR}/Rating.o ${BUILD_DIR}/Comment.o ${BUILD_DIR}/API.o ${BUILD_DIR}/ObjectRelational.o ${BUILD_DIR}/UserInterface.o ${BUILD_DIR}/Backend.o ${BUILD_DIR}/Exception.o ${BUILD_DIR}/StarRangeFilter.o ${BUILD_DIR}/Result.o ${BUILD_DIR}/DefaultAvgPriceFilter.o ${BUILD_DIR}/AI.o -o utrip.out
 
 ${BUILD_DIR}/main.o: main.cpp ConstNames.hpp ${USERINTERFACE_DIR}/UserInterface.hpp | build_dir
 	${CC_EXEC} -c main.cpp -o ${BUILD_DIR}/main.o
@@ -45,7 +46,7 @@ ${BUILD_DIR}/LuxuryRoom.o: ${ROOMS_DIR}/LuxuryRoom.cpp ${ROOMS_DIR}/LuxuryRoom.h
 ${BUILD_DIR}/ReserveCase.o: ${USER_DIR}/ReserveCase.cpp ${USER_DIR}/ReserveCase.hpp ${USER_DIR}/User.hpp ConstNames.hpp | build_dir
 	${CC_EXEC} -c ${USER_DIR}/ReserveCase.cpp -o ${BUILD_DIR}/ReserveCase.o
 
-${BUILD_DIR}/User.o: ${USER_DIR}/User.cpp ${USER_DIR}/User.hpp ${ROOMS_DIR}/Room.hpp ${FILTER_DIR}/CityFilter.hpp ${FILTER_DIR}/AvgPriceFilter.hpp ${FILTER_DIR}/AdvancedFilter.hpp ${FILTER_DIR}/StarRangeFilter.hpp ${FILTER_DIR}/DefaultAvgPriceFilter.hpp | build_dir
+${BUILD_DIR}/User.o: ${USER_DIR}/User.cpp ${USER_DIR}/User.hpp ${ROOMS_DIR}/Room.hpp ${FILTER_DIR}/CityFilter.hpp ${FILTER_DIR}/AvgPriceFilter.hpp ${FILTER_DIR}/AdvancedFilter.hpp ${FILTER_DIR}/StarRangeFilter.hpp ${FILTER_DIR}/DefaultAvgPriceFilter.hpp ${AI_DIR}/AI.hpp ${DB_DIR}/Rating.hpp | build_dir
 	${CC_EXEC} -c ${USER_DIR}/User.cpp -o ${BUILD_DIR}/User.o
 
 ${BUILD_DIR}/Filter.o: ${FILTER_DIR}/Filter.cpp ${FILTER_DIR}/Filter.hpp ${USER_DIR}/User.hpp | build_dir
@@ -75,7 +76,7 @@ ${BUILD_DIR}/ObjectRelational.o: ${ORM_DIR}/ObjectRelational.cpp ${ORM_DIR}/Obje
 ${BUILD_DIR}/UserInterface.o: ${USERINTERFACE_DIR}/UserInterface.cpp ${USERINTERFACE_DIR}/UserInterface.hpp ConstNames.hpp ${API_DIR}/API.hpp | build_dir
 	${CC_EXEC} -c ${USERINTERFACE_DIR}/UserInterface.cpp -o ${BUILD_DIR}/UserInterface.o
 
-${BUILD_DIR}/Backend.o: ${BACKEND_DIR}/Backend.cpp ${BACKEND_DIR}/Backend.hpp ${ORM_DIR}/ObjectRelational.hpp ${USER_DIR}/User.hpp ${RESULT_DIR}/Result.hpp | build_dir
+${BUILD_DIR}/Backend.o: ${BACKEND_DIR}/Backend.cpp ${BACKEND_DIR}/Backend.hpp ${ORM_DIR}/ObjectRelational.hpp ${USER_DIR}/User.hpp ${RESULT_DIR}/Result.hpp ${AI_DIR}/AI.hpp ${DB_DIR}/Rating.hpp | build_dir
 	${CC_EXEC} -c ${BACKEND_DIR}/Backend.cpp -o ${BUILD_DIR}/Backend.o
 
 ${BUILD_DIR}/Exception.o: ${EXCEPTION_DIR}/Exception.cpp ${EXCEPTION_DIR}/Exception.hpp | build_dir
@@ -89,6 +90,9 @@ ${BUILD_DIR}/Result.o: ${RESULT_DIR}/Result.cpp ${RESULT_DIR}/Result.hpp ${API_D
 
 ${BUILD_DIR}/DefaultAvgPriceFilter.o: ${FILTER_DIR}/DefaultAvgPriceFilter.cpp ${FILTER_DIR}/DefaultAvgPriceFilter.hpp ${FILTER_DIR}/Filter.hpp ${USER_DIR}/ReserveCase.hpp | build_dir
 	${CC_EXEC} -c ${FILTER_DIR}/DefaultAvgPriceFilter.cpp -o ${BUILD_DIR}/DefaultAvgPriceFilter.o
+
+${BUILD_DIR}/AI.o: ${AI_DIR}/AI.cpp ${AI_DIR}/AI.hpp ${BACKEND_DIR}/Backend.hpp ${DB_DIR}/Rating.hpp | build_dir
+	${CC_EXEC} -c ${AI_DIR}/AI.cpp -o ${BUILD_DIR}/AI.o
 
 build_dir:
 	mkdir -p ${BUILD_DIR}

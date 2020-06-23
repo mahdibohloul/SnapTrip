@@ -6,7 +6,7 @@
 class DeluxeRoom : public Database::Hotel::Room
 {
 public:
-    DeluxeRoom(float price);
+    DeluxeRoom(long double price);
     ~DeluxeRoom();
     std::string generate_id();
     void reset_id();

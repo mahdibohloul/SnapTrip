@@ -5,7 +5,7 @@ using namespace std;
 
 int StandardRoom::current_id = ConstNames::First_Room_Id;
 
-StandardRoom::StandardRoom(float price) : Database::Hotel::Room(generate_id(), Room_Class::Standard, price){}
+StandardRoom::StandardRoom(long double price) : Database::Hotel::Room(generate_id(), Room_Class::Standard, price){}
 
 StandardRoom::~StandardRoom(){}
 

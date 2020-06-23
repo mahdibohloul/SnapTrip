@@ -4,6 +4,13 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+
+
+#define Location_ES 0
+#define Cleanliness_ES 1
+#define Staff_ES 2
+#define Facilities_ES 3
+#define Value_ES 4
 using namespace std;
 
 API::Result::Result(string msg)
@@ -62,11 +69,17 @@ API::Result::Result(Database::Hotel::RatingInfo avg_ratings)
     construct_map();
 }
 
-API::Result::Result(Database::User::ManualWeights manual_weights)
+API::Result::Result(Database::User::Weights manual_weights)
 {
     this->manual_weights = manual_weights;
     this->type = Manual_Weights;
     construct_map();
+}
+
+API::Result::Result(v_double estimated_weights)
+{
+    this->estimated_weights = estimated_weights;
+    this->type = Estimated_Weights;
 }
 
 API::Result::~Result()
@@ -101,7 +114,7 @@ string API::Result::get_transactions_info()
 {
     ostringstream os;
     string delim;
-    for(float f : transactions)
+    for(long double f : transactions)
     {
         os << delim << f;
         delim = ConstNames::New_Line;
@@ -214,6 +227,19 @@ string API::Result::get_manual_weights()
     return os.str() + ConstNames::New_Line;
 }
 
+string API::Result::get_estimated_weights()
+{
+    ostringstream os;
+    os << setprecision(ConstNames::Precision) << fixed;
+    os << ConstNames::Location << ConstNames::Space << estimated_weights[Location_ES] << ConstNames::Space;
+    os << ConstNames::Cleanliness << ConstNames::Space << estimated_weights[Cleanliness_ES] << ConstNames::Space;
+    os << ConstNames::Staff << ConstNames::Space << estimated_weights[Staff_ES] << ConstNames::Space;
+    os << ConstNames::Facilities << ConstNames::Space << estimated_weights[Facilities_ES] << ConstNames::Space;
+    os << ConstNames::Value_For_Money << ConstNames::Space << estimated_weights[Value_ES];
+    return os.str() + ConstNames::New_Line;
+}
+
+
 void API::Result::construct_map()
 {
     map_of_results.insert(make_pair(Message, &API::Result::get_message));
@@ -225,4 +251,5 @@ void API::Result::construct_map()
     map_of_results.insert(make_pair(GET_Comments, &API::Result::get_comments_info));
     map_of_results.insert(make_pair(Average_Ratings, &API::Result::get_average_ratings));
     map_of_results.insert(make_pair(Manual_Weights, &API::Result::get_manual_weights));
+    map_of_results.insert(make_pair(Estimated_Weights, &API::Result::get_estimated_weights));
 }

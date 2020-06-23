@@ -39,8 +39,8 @@ ObjectRelational::~ObjectRelational()
 void ObjectRelational::database_setup(Backend::data_t data)
 {
     info_t property_amenities = data[e_property_amenities];
-    coordinate_t latitude = stof(data[e_latitude]);
-    coordinate_t longitude = stof(data[e_longitude]);
+    coordinate_t latitude = stold(data[e_latitude]);
+    coordinate_t longitude = stold(data[e_longitude]);
     num_t no_standard_rooms = stoi(data[e_no_s_rooms]);
     num_t no_deluxe_rooms = stoi(data[e_no_d_rooms]);
     num_t no_luxury_rooms = stoi(data[e_no_l_rooms]);
@@ -63,12 +63,12 @@ void ObjectRelational::rating_db_setup(Backend::data_t data)
     auto hotel = database->get_hotels(hotel_id);
     auto rating_info = Database::Hotel::RatingInfo();
     rating_info.hotel_id = hotel_id;
-    rating_info.location = stof(data[DR_Location]);
-    rating_info.cleanliness = stof(data[DR_Cleanliness]);
-    rating_info.staff = stof(data[DR_Staff]);
-    rating_info.facilities = stof(data[DR_Facilities]);
-    rating_info.value_for_money = stof(data[DR_Value]);
-    rating_info.overall_rating = stof(data[DR_Overall]);
+    rating_info.location = stold(data[DR_Location]);
+    rating_info.cleanliness = stold(data[DR_Cleanliness]);
+    rating_info.staff = stold(data[DR_Staff]);
+    rating_info.facilities = stold(data[DR_Facilities]);
+    rating_info.value_for_money = stold(data[DR_Value]);
+    rating_info.overall_rating = stold(data[DR_Overall]);
     hotel->set_default_rating_info(rating_info);
 }
 
@@ -180,7 +180,7 @@ void ObjectRelational::post_rating(Database::Hotel::RatingInfo &rating_info)
     hotel->post_rating(rating_info);
 }
 
-void ObjectRelational::post_manual_weights(Database::User::ManualWeights &manual_weights, Database::User* user)
+void ObjectRelational::post_manual_weights(Database::User::Weights &manual_weights, Database::User* user)
 {
     user->set_manual_weights(manual_weights);
 }
@@ -198,6 +198,12 @@ void ObjectRelational::get_manual_weights(Database::User *user)
 {
     auto manual_weights = user->get_manual_weights();
     responding(manual_weights);
+}
+
+void ObjectRelational::get_estimated_weights(Database::User *user)
+{
+    auto estimated_weights = user->get_estimated_weights();
+    responding(backend->get_vector_of_weights(estimated_weights));
 }
 
 template<class T>

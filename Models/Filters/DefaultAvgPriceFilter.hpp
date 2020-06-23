@@ -12,14 +12,14 @@ public:
     void filter(Database::l_hotels&);
 
 private:
-    float calculate_average(const Database::User::l_booked& booked_rooms);
-    float calculate_average_deviation(const Database::User::l_booked& booked_rooms);
+    long double calculate_average(const Database::User::l_booked& booked_rooms);
+    long double calculate_average_deviation(const Database::User::l_booked& booked_rooms);
 
-    bool in_range(float hotel_avg_price);
+    bool in_range(long double hotel_avg_price);
 
 private:
-    float average_deviation;
-    float average;
+    long double average_deviation;
+    long double average;
 
 };
 

@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Database::User::ReserveCase::ReserveCase(Database::Hotel* hotel, v_rooms& b_rooms, float price, int check_in, int check_out, list<int>& l_id)
+Database::User::ReserveCase::ReserveCase(Database::Hotel* hotel, v_rooms& b_rooms, long double price, int check_in, int check_out, list<int>& l_id)
 {
     this->id = this->generate_id(l_id);
     this->hotel = hotel;
@@ -39,7 +39,7 @@ string Database::User::ReserveCase::get_hotel_reserved_id() { return hotel->id; 
 
 int Database::User::ReserveCase::get_quantity_of_reserves() { return rooms.size(); }
 
-float Database::User::ReserveCase::get_cost_of_reserves() { return cost; }
+long double Database::User::ReserveCase::get_cost_of_reserves() { return cost; }
 
 pair<int, int> Database::User::ReserveCase::get_reserved_days() { return make_pair(check_in, check_out); }
 

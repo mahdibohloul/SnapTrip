@@ -1,0 +1,14 @@
+POST signup ? email sap@gmail.com username a password p
+POST ratings ? hotel ba7b9e7b9073e745d38122d74045be00 location 1.62 cleanliness 3.17 staff 1.04 facilities 1.25 value_for_money 1.72 overall_rating 2.00
+POST ratings ? hotel 60ac1903f046575659e673d05595e452 location 4.56 cleanliness 2.31 staff 3.69 facilities 3.99 value_for_money 1.00 overall_rating 2.90
+POST ratings ? hotel 9f44a0a7acfd5ce8d7abe69978b2a9e0 location 3.78 cleanliness 1.13 staff 3.93 facilities 1.49 value_for_money 2.08 overall_rating 2.30
+POST ratings ? hotel 424e80851ffa9268998759a161ef9620 location 4.58 cleanliness 3.15 staff 2.40 facilities 3.83 value_for_money 3.76 overall_rating 3.40
+POST ratings ? hotel 820a2280b2be3049fd4efe6c3d8180db location 4.31 cleanliness 4.40 staff 4.20 facilities 2.19 value_for_money 3.55 overall_rating 3.91
+POST ratings ? hotel a15cc26d987a0507e2f821741511ee1e location 3.17 cleanliness 3.20 staff 1.68 facilities 3.31 value_for_money 4.37 overall_rating 3.11
+POST ratings ? hotel 6032089d911e10217d7315b5e8b6c0a1 location 2.75 cleanliness 4.02 staff 3.02 facilities 1.21 value_for_money 2.44 overall_rating 2.98
+POST ratings ? hotel 83f72733392255bcbd5dbc72b373fb20 location 3.53 cleanliness 1.43 staff 4.50 facilities 3.34 value_for_money 4.31 overall_rating 3.12
+POST ratings ? hotel 9afd2a4f26174caa6f4c1756b9663326 location 2.89 cleanliness 2.25 staff 3.37 facilities 4.56 value_for_money 3.69 overall_rating 3.13
+POST ratings ? hotel 653f1116dc8e12b979945b0a3ebaba6a location 2.05 cleanliness 4.28 staff 2.01 facilities 1.16 value_for_money 3.91 overall_rating 3.02
+POST sort ? property rating_personal order ascending
+POST filters ? city Udaipur
+GET hotels

@@ -3,6 +3,9 @@
 
 #include "../Rooms/Room.hpp"
 
+typedef std::vector<long double> v_double;
+typedef std::pair<long double, long double> pair_floats;
+
 class Database::User
 {
 public:
@@ -27,8 +30,8 @@ public:
         std::string city;
         int min_star;
         int max_star;
-        float min_price;
-        float max_price;
+        long double min_price;
+        long double max_price;
         Hotel::Room::Room_Class type;
         int quantity;
         int check_in;
@@ -52,20 +55,30 @@ public:
         SortMode mode;
         SortInfo();
     };
-    struct ManualWeights
+    enum WeightsEnum
+    {
+        WE_Location,
+        WE_Cleanliness,
+        WE_Staff,
+        WE_Facilities,
+        WE_Value
+    };
+    struct Weights
     {
         Hotel::RatingInfo weights;
         bool activity;
-        ManualWeights(const Hotel::RatingInfo& i_weights = Hotel::RatingInfo(), bool i_activity = ConstNames::Active_Mode)
+        Weights(const Hotel::RatingInfo& i_weights = Hotel::RatingInfo(), bool i_activity = ConstNames::Inactive_Mode)
         {
             weights = i_weights;
             activity = i_activity;
         }
-        bool operator==(const ManualWeights& second_weights);
+        bool operator==(const Weights& second_weights);
+        long double operator[](const int which);
+        void initialize_weights(const v_double i_weights);
     };
     class Filter;
     class ReserveCase;
-    typedef std::list<float> l_transactions;
+    typedef std::list<long double> l_transactions;
     typedef std::list<ReserveCase*> l_booked;
     typedef std::map<FilterMode, Filter*> m_filter;
     typedef std::map<Hotel*, Hotel::Rating*> map_ratings;
@@ -73,9 +86,9 @@ public:
 private:
     struct Wallet
     {
-        float amount;
+        long double amount;
         l_transactions transactions;
-        Wallet(float i_amount = 0.0f)
+        Wallet(long double i_amount = 0.0f)
         {
             amount = i_amount;
             transactions.push_front(amount);
@@ -90,14 +103,18 @@ public:
     void set_default_filter(const bool activation_mode);
     void set_sort_info(const SortInfo& sort_info);
     void set_rating(Hotel* hotel, Hotel::Rating* rating);
-    void set_manual_weights(const ManualWeights& manual_weights);
+    void set_manual_weights(const Weights& manual_weights);
     void delete_filter();
     void deactivate_default_filter();
     void delete_reserve(int id);
-    ManualWeights get_manual_weights();
+    Weights get_manual_weights();
+    Weights get_estimated_weights();
 
-    bool can_pay(float cost);
+    bool can_pay(long double cost);
     bool the_default_filter_applied();
+    bool already_rated(Hotel* hotel);
+
+    long double get_overall_hotel_rating(Hotel* hotel);
 
 private:
     User(const UserInfo& info);
@@ -109,19 +126,26 @@ private:
 
     void sort_hotels(Database::l_hotels& hotels);
     void apply_default_filter(Database::l_hotels& hotels);
-    void deposit(float amount);
+    void deposit(long double amount);
     void set_filters(const enum FilterMode mode);
-    void add_reserve_case(Hotel* hotel, Hotel::v_room& b_rooms, int check_in, int check_out, float price);
-    void pay_cost(float cost);
+    void add_reserve_case(Hotel* hotel, Hotel::v_room& b_rooms, int check_in, int check_out, long double price);
+    void pay_cost(long double cost);
     void delete_from_reserves(ReserveCase* reserve);
     void clean_filters_up();
     void clean_reservations_up();
+
+    pair_floats get_ratings_of_hotels(Hotel* h1, Hotel* h2);
+
+    Weights calculate_rating();
+    long double calculate_overall_rating(Weights weights);
 
     ReserveCase* query_in_reserves(int id);
 
     l_booked get_reserve();
 
     bool could_apply_default_filter();
+
+    Hotel::v_rating get_ratings();
 
 private:
     info_t id;
@@ -134,7 +158,8 @@ private:
     map_ratings ratings;
     m_filter filters;
     std::list<int> id_reserve_list;
-    ManualWeights manual_weights;
+    Weights manual_weights;
+    Weights estimated_weights;
 };
 
 #endif

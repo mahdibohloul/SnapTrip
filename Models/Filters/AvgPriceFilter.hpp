@@ -14,8 +14,8 @@ private:
     bool in_range(const Database::Hotel* hotel);
 
 private:
-    float min_price;
-    float max_price;
+    long double min_price;
+    long double max_price;
 
 };
 

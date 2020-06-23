@@ -8,8 +8,8 @@
 typedef std::string info_t;
 typedef std::vector<info_t> v_info;
 typedef int num_t;
-typedef float price_t;
-typedef float coordinate_t;
+typedef long double price_t;
+typedef long double coordinate_t;
 
 class Database
 {
@@ -34,7 +34,7 @@ public:
         price_t luxury_room_price;
         price_t premium_room_price;
         HotelInfo(info_t u_id, info_t prop_name, num_t hotel_r, info_t hotel_ov, info_t prop_amenities,
-                  info_t i_city, float latude, float lotude, info_t i_url, num_t n_s_r, num_t n_d_r,
+                  info_t i_city, long double latude, long double lotude, info_t i_url, num_t n_s_r, num_t n_d_r,
                   num_t n_l_r, num_t n_p_r, price_t s_p, price_t d_p, price_t l_p, price_t p_p);
     };
 
@@ -43,9 +43,9 @@ public:
         info_t email;
         info_t username;
         long long password;
-        float amount;
+        long double amount;
         int no_transactions;
-        UserInfo(info_t i_email = "", info_t i_username = "", long long i_password = 0, float i_amount = 0.0f)
+        UserInfo(info_t i_email = "", info_t i_username = "", long long i_password = 0, long double i_amount = 0.0f)
         {
             email = i_email;
             username = i_username;
@@ -72,7 +72,7 @@ public:
     void increase_user_amount(const UserInfo& user_info, User* user);
     void post_comment(User* user, std::string hotel_id, std::string comment);
 
-    std::list<float> get_account_information(const UserInfo& user_info, User* user);
+    std::list<long double> get_account_information(const UserInfo& user_info, User* user);
     l_hotels get_hotels(User* user);
     Hotel* get_hotels(info_t hotel_id);
     void booked_out(User* user, Hotel* hotel, int quantity, int check_in, int check_out, int type);

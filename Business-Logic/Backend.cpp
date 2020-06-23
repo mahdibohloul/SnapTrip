@@ -3,10 +3,13 @@
 #include "../ConstNames.hpp"
 #include "../Exception/Exception.hpp"
 #include "../API/Result/Result.hpp"
+#include "../Models/Rating.hpp"
+#include "./AI/AI.hpp"
 #include <algorithm>
 #include <functional>
 #include <iostream>
 #include <regex>
+#include <numeric>
 using namespace std;
 
 Backend* Backend::instance = nullptr;
@@ -346,6 +349,17 @@ void Backend::get_manual_weights(data_t data)
         throw Exception(ConstNames::Bad_Request_msg);
 }
 
+void Backend::get_estimated_weights(data_t data)
+{
+    if(data.empty())
+    {
+        check_access(ConstNames::Online_Mode);
+        object_relational->get_estimated_weights(*online_users.begin());
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
+}
+
 void Backend::delete_filter(data_t data)
 {
     if(data.empty())
@@ -449,7 +463,7 @@ Database::UserInfo Backend::fill_user_info(const data_t& data, string mode)
     else if(mode == ConstNames::POST_Wallet_Order)
     {
         string amount = (find_info(ConstNames::Amount, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Amount, data) : throw Exception(ConstNames::Bad_Request_msg);
-        user_info.amount = stof(amount);
+        user_info.amount = stold(amount);
         return user_info;
     }
     else if(mode == ConstNames::GET_Wallet_Order)
@@ -497,8 +511,8 @@ Database::User::FilterInfo Backend::fill_filter_info(const data_t& data)
     }
     else if(valid_price_range(min_price, max_price))
     {
-        filter_info.min_price = stof(min_price);
-        filter_info.max_price = stof(max_price);
+        filter_info.min_price = stold(min_price);
+        filter_info.max_price = stold(max_price);
         filter_info.mode = Database::User::FilterMode::AvgPrice;
     }
     else if(valid_advanced_filter(type, quantity, check_in, check_out))
@@ -549,25 +563,25 @@ Database::Hotel::RatingInfo Backend::fill_rating_info(const data_t& data, const 
     if(valid_rating_info(hotel_id, location, cleanliness, staff, facilities, value_for_money, overall_rating))
     {
         rating_info.hotel_id = hotel_id;
-        rating_info.location = stof(location);
-        rating_info.cleanliness = stof(cleanliness);
-        rating_info.staff = stof(staff);
-        rating_info.facilities = stof(facilities);
-        rating_info.value_for_money = stof(value_for_money);
-        rating_info.overall_rating = stof(overall_rating);
+        rating_info.location = stold(location);
+        rating_info.cleanliness = stold(cleanliness);
+        rating_info.staff = stold(staff);
+        rating_info.facilities = stold(facilities);
+        rating_info.value_for_money = stold(value_for_money);
+        rating_info.overall_rating = stold(overall_rating);
         rating_info.user = *online_users.begin();
         return rating_info;
     }
     throw Exception(ConstNames::Bad_Request_msg);
 }
 
-Database::User::ManualWeights Backend::fill_manual_weights_info(const data_t& data)
+Database::User::Weights Backend::fill_manual_weights_info(const data_t& data)
 {
     auto weights = Database::Hotel::RatingInfo();
     auto activity_status = (find_info(ConstNames::Active, data) == ConstNames::True) ? ConstNames::Active_Mode : ConstNames::Inactive_Mode;
     if(activity_status)
         weights = fill_rating_info(data, ConstNames::Manual_Weights_Order);
-    return Database::User::ManualWeights(weights, activity_status);
+    return Database::User::Weights(weights, activity_status);
 }
 
 bool Backend::valid_sort_info(const std::string& property, const std::string mode)
@@ -596,8 +610,8 @@ bool Backend::valid_rating_info(std::string hotel_id, std::string location, std:
 {
     if(hotel_id != ConstNames::Empty_Str && location != ConstNames::Empty_Str && cleanliness != ConstNames::Empty_Str && staff != ConstNames::Empty_Str && facilities != ConstNames::Empty_Str && value_for_money != ConstNames::Empty_Str && overall_rating != ConstNames::Empty_Str)
     {
-        vector<float> ratings = {stof(location), stof(cleanliness), stof(staff), stof(facilities), stof(value_for_money), stof(overall_rating)};
-        for(float rate : ratings)
+        vector<long double> ratings = {stold(location), stold(cleanliness), stold(staff), stold(facilities), stold(value_for_money), stold(overall_rating)};
+        for(long double rate : ratings)
         {
             if(!in_range(rate, ConstNames::Min_Rate, ConstNames::Max_Rate))
                 throw Exception(ConstNames::Bad_Request_msg);
@@ -624,7 +638,7 @@ bool Backend::valid_price_range(string min_price, string max_price)
 {
     if(min_price != ConstNames::Empty_Str && max_price != ConstNames::Empty_Str)
     {
-        int min = stof(min_price), max = stof(max_price);
+        int min = stold(min_price), max = stold(max_price);
         if(max >= min && min >= 0 && max >= 0)
             return true;
         else
@@ -657,7 +671,7 @@ Content Backend::find_info(const string& mode, const data_t& data)
 {
     auto iterator = find(data.begin(), data.end(), mode);
     if(info_exist(iterator, iterator + 1, data.end()) != ConstNames::Exist)
-        throw Exception(ConstNames::Bad_Request_msg);
+        return ConstNames::Empty_Str;
     iterator++;
     return (*iterator);
 }
@@ -768,6 +782,7 @@ void Backend::construct_maps()
     func_get_map.insert(make_pair(ConstNames::Comment_Order, &Backend::get_comment));
     func_get_map.insert(make_pair(ConstNames::Rating_Order, &Backend::get_rating));
     func_get_map.insert(make_pair(ConstNames::Manual_Weights_Order, &Backend::get_manual_weights));
+    func_get_map.insert(make_pair(ConstNames::Estimated_Weights_Order, &Backend::get_estimated_weights));
     func_delete_map.insert(make_pair(ConstNames::Filter_Order, &Backend::delete_filter));
     func_delete_map.insert(make_pair(ConstNames::Reserve_Order, &Backend::delete_reserve));
 }
@@ -809,3 +824,35 @@ void Backend::responding(string message)
 }
 
 Database::User* Backend::get_curr_user() { return *online_users.begin(); }
+
+Database::User::Weights Backend::calculate_weights(Database::User* user, Database::Hotel::v_rating ratings)
+{
+    auto ai = new AI(user);
+    return ai->get_calculated_weights(ratings);
+}
+
+long double Backend::calculate_weighted_average(Database::User::Weights weights, Database::Hotel::v_rating::iterator rating_itr)
+{
+    auto v_weights = instance->get_vector_of_weights(weights);
+    auto sum = (*rating_itr)->get_sum_weighted(v_weights);
+    auto weighted_sum = accumulate(v_weights.begin(), v_weights.end(), 0);
+    return sum / weighted_sum;
+}
+
+long double Backend::calculate_weighted_average(v_double weights, Database::Hotel::v_rating::iterator rating_itr)
+{
+    auto sum = (*rating_itr)->get_sum_weighted(weights);
+    auto weighted_sum = accumulate(weights.begin(), weights.end(), 0.0);
+    return sum / weighted_sum;
+}
+
+v_double Backend::get_vector_of_weights(Database::User::Weights weights)
+{
+    auto temp = v_double();
+    for(int count = 0; count < ConstNames::Maximum_Weights_Number; count++)
+        temp.push_back(weights[count]);
+    return temp;
+}
+
+
+
