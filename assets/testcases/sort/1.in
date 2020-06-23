@@ -1,0 +1,3 @@
+POST signup ? email john@doe.com username john password doe
+POST sort ? property id order descending
+GET hotels

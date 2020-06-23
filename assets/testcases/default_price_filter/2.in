@@ -1,0 +1,14 @@
+POST signup ? email john@doe.com username john password doe
+POST wallet ? amount 100000
+POST reserves ? hotel 60ac1903f046575659e673d05595e452 type standard quantity 1 check_in 1 check_out 10
+POST reserves ? hotel 9f44a0a7acfd5ce8d7abe69978b2a9e0 type standard quantity 3 check_in 1 check_out 10
+POST reserves ? hotel a15cc26d987a0507e2f821741511ee1e type deluxe quantity 1 check_in 1 check_out 10
+POST reserves ? hotel 9afd2a4f26174caa6f4c1756b9663326 type deluxe quantity 2 check_in 1 check_out 10
+POST reserves ? hotel 9afd2a4f26174caa6f4c1756b9663326 type standard quantity 1 check_in 1 check_out 10
+POST reserves ? hotel 498f512852defc01b2dd14ff350ed11c type standard quantity 1 check_in 1 check_out 10
+POST reserves ? hotel da9b35a172bec9255b606b338ebd3862 type standard quantity 1 check_in 1 check_out 10
+POST reserves ? hotel 74c08e56a4cdbec14550ac1535a82408 type standard quantity 3 check_in 1 check_out 10
+POST reserves ? hotel ae3200631ff30a7e205f7923060e90fd type luxury quantity 1 check_in 1 check_out 10
+POST reserves ? hotel d59babf0cb6e2d0b7b6ea99981ed8337 type standard quantity 1 check_in 1 check_out 10
+POST default_price_filter ? active false
+GET hotels

@@ -1,0 +1,2 @@
+POST signup ? email john@doe.com username john password doe
+GET ratings ? hotel 9f44a0a7ac

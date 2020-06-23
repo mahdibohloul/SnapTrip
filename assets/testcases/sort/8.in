@@ -1,0 +1,2 @@
+POST signup ? email john@doe.com username john password doe
+POST sort ? propert asd order descending

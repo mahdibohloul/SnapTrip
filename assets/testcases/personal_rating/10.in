@@ -1,0 +1,5 @@
+POST signup ? email john@doe.com username john password doe
+POST ratings ? hotel 2b27a184f4c347732efc3524334c1b03 location 1 cleanliness 2 staff 1 facilities 2 value_for_money 1 overall_rating 4.5
+POST manual_weights ? active true location 1.5 facilities 2.1 staff 4.7 cleanliness 4 value_for_money 2.1
+POST sort ? property rating_personal order ascending
+GET hotels

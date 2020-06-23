@@ -1,0 +1,2 @@
+POST signup ? email john@doe.com username john password doe
+POST manual_weights ? active true location 1. facilities 2.5 staff 5.2 cleanliness 4 value_for_money 3.1
