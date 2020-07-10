@@ -46,17 +46,17 @@ To make SnapTrip smarter, we added [AI](#artificial-intelligence) to the Busines
 ### Artificial-Intelligence
 If you want to see hotels by your rating but don't weigh them manually, SnapTrip estimates your weight! On what basis does SnapTrip do this? First of all, you need to rate at least 5 hotels so that SnapTrip can estimate the right weight.
 
-Suppose you give $x^{i}$ as points to a hotel and $y^{i}$ as your total points to that hotel. For example: 
+Suppose you give <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;x^i" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;x^i" title="x^i" /></a> as points to a hotel and <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;y^i" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;y^i" title="y^i" /></a> as your total points to that hotel. For example: 
 
-${x^1} = [2.1, 1.6, 4.6, 2.3, 1.5]$ ,   $y^{1} = 2.58$ ,  $x^{1}_{1} = 1.6$
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;x^1&space;=&space;[2.1,&space;1.6,&space;4.6,&space;2.3,&space;1.5]" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;x^1&space;=&space;[2.1,&space;1.6,&space;4.6,&space;2.3,&space;1.5]" title="x^1 = [2.1, 1.6, 4.6, 2.3, 1.5]" /></a>         ,   <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;$y^{1}&space;=&space;2.58$" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;$y^{1}&space;=&space;2.58$" title="$y^{1} = 2.58$" /></a> ,  <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;$x^{1}_{1}&space;=&space;1.6$" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;$x^{1}_{1}&space;=&space;1.6$" title="$x^{1}_{1} = 1.6$" /></a>
 
-We now estimate the level of overall satisfaction as a function of the $x^{j}$ category scores:
-$\hat{y^j} = f(x^j, w) = \frac{\sum_{i = 1}^{5} (w_{i} * x^{j}_{i})}{\sum_{i = 1}^{5} w_{i}}$
+We now estimate the level of overall satisfaction as a function of the <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;$x^{j}$" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;$x^{j}$" title="$x^{j}$" /></a> category scores:
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;$\hat{y^j}&space;=&space;f(x^j,&space;w)&space;=&space;\frac{\sum_{i&space;=&space;1}^{5}&space;(w_{i}&space;*&space;x^{j}_{i})}{\sum_{i&space;=&space;1}^{5}&space;w_{i}}$" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;$\hat{y^j}&space;=&space;f(x^j,&space;w)&space;=&space;\frac{\sum_{i&space;=&space;1}^{5}&space;(w_{i}&space;*&space;x^{j}_{i})}{\sum_{i&space;=&space;1}^{5}&space;w_{i}}$" title="$\hat{y^j} = f(x^j, w) = \frac{\sum_{i = 1}^{5} (w_{i} * x^{j}_{i})}{\sum_{i = 1}^{5} w_{i}}$" /></a>
 
 And we define the error function as follows:
-$E(x^j, w, y^j) = (f(x^j, w) - y^j)^2$
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;$E(x^j,&space;w,&space;y^j)&space;=&space;(f(x^j,&space;w)&space;-&space;y^j)^2$" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;$E(x^j,&space;w,&space;y^j)&space;=&space;(f(x^j,&space;w)&space;-&space;y^j)^2$" title="$E(x^j, w, y^j) = (f(x^j, w) - y^j)^2$" /></a>
 
-Now our goal is to find all the $w_{j}$ in such a way that the **error function** becomes zero for all the values ​​of *j*.
+Now our goal is to find all the <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;$w_{j}$" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\inline&space;$w_{j}$" title="$w_{j}$" /></a> in such a way that the **error function** becomes zero for all the values ​​of *j*.
 
 ## ORM
 **ORM** stands for **Object Relational Mapping** and is responsible for creating *relational models* and *tables* using input information.
