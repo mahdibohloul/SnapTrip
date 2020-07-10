@@ -1,5 +1,5 @@
 # SnapTrip
-SnapTrip, the final project of the Advanced Programming course, in phase 1 and phase 2, my focus is on the proper implementation of the database, creating the right API and make her smart.
+SnapTrip is the final project of an Advanced Programming course at the University of Tehran. In the first two steps, my focus is on the proper implementation of the Database, creating the right APIs, and setting up Artificial Intelligence to increase the efficiency and performance of the program to achieve the best results.
 
 ## Layers
 
@@ -9,12 +9,16 @@ SnapTrip, the final project of the Advanced Programming course, in phase 1 and p
 >> Result
 
 > Business-Logic
+>> Artificial Intelligence
 
 > Persistence-Layer(ORM)
 
 > Models
 >> Database
->>> User &
+>>> User
+>>>> Filters,
+>>>> ReservationCase
+
 >>> Comment
 
 >>> Hotel
@@ -23,7 +27,7 @@ SnapTrip, the final project of the Advanced Programming course, in phase 1 and p
 ## User-Interface
 It is the part that you can see what SnapTrip does and you don't have to worry about what happens in the backend,
 but in this phase of SnapTrip (phase 1), the User-Interface doesn't have a big role in the game and as I mentioned before, in this phase we want to implement a good API and make sure the Backend part does everything right.
-You can use the orders in the [Commands](#commands) part in the terminal to see the performance of SnapTrip.
+You can use the orders in the [Commands](#commands) part in the terminal to see the application of SnapTrip.
 
 ## API
 **API** is the connection between the **User-Interface**, **ORM** and **Backend**. The **API** receives the entered commands and transfers them to the **Business-Logic** layer. After all the steps, it takes the results and stores them in the [Result](#result-class) class, which I'll talk about later.
@@ -36,19 +40,36 @@ The **Result** class is in the **API** layer, and after all the steps in the **B
 ## Business-Logic
 This **SnapTrip** engine and all the logic and program steps and all the functions work in this section.
 Each command is sent to this layer via the **API**, and here, the command is analyzed, and if there is an error in it, *Exceptions* are returned, otherwise, the commands are transferred to the next layer, **ORM**.
+To make SnapTrip smarter, we added [AI](#artificial-intelligence) to the Business-Logic layer.
+
+
+### Artificial-Intelligence
+If you want to see hotels by your rating but don't weigh them manually, SnapTrip estimates your weight! On what basis does SnapTrip do this? First of all, you need to rate at least 5 hotels so that SnapTrip can estimate the right weight.
+
+Suppose you give $x^{i}$ as points to a hotel and $y^{i}$ as your total points to that hotel. For example: 
+
+${x^1} = [2.1, 1.6, 4.6, 2.3, 1.5]$ ,   $y^{1} = 2.58$ ,  $x^{1}_{1} = 1.6$
+
+We now estimate the level of overall satisfaction as a function of the $x^{j}$ category scores:
+$\hat{y^j} = f(x^j, w) = \frac{\sum_{i = 1}^{5} (w_{i} * x^{j}_{i})}{\sum_{i = 1}^{5} w_{i}}$
+
+And we define the error function as follows:
+$E(x^j, w, y^j) = (f(x^j, w) - y^j)^2$
+
+Now our goal is to find all the $w_{j}$ in such a way that the **error function** becomes zero for all the values ​​of *j*.
 
 ## ORM
 **ORM** stands for **Object Relational Mapping** and is responsible for creating *relational models* and *tables* using input information.
-**ORM** is in direct contact with *database*, which means that if any part of the program wants to do something with the data, it must transfer the data via *ORM*.
+**ORM** is in direct contact with *database*, which means that if any part of the program wants to do something with the data, it must transfer the data via **ORM**.
 
 ## Commands
-** the order of the commands-order doesn't matter
+###### *the order of the commands-order doesn't matter*
 
 - Make executable file
 ```bash
 make
 ```
-- Run the program with init data
+- Run the SnapTrip with init data
 ```bash
 ./utrip assets/hotels.csv assets/ratings.csv
 ```
@@ -147,10 +168,29 @@ GET ratings ? hotel <hotel_id>
 POST default_price_filter ? active <true|false>
 ```
 - With the following command, you can arrange hotels ascending or descending based on the following features.
-    - property: id, name, star_rating, city, standard_room_price, deluxe_room_price, luxury_room_price, premium_room_price, average_room_price.
+    - property: id, name, star_rating, city, standard_room_price, deluxe_room_price, luxury_room_price, premium_room_price, average_room_price, rating_personal.
 ```bash
 POST sort ? property <property> order <ascending|descending>
 ```
+
+- With the following commands, you can set manual weights to sort hotels
+```bash
+POST manual_weights ? active true location <location> cleanliness <cleanliness> staff <staff> facilities <facilities> value_for_money <value_for_money>
+```
+```bash
+POST manual_weights ? active false
+```
+
+- With the following command, you can see manual weights
+```bash
+GET manual_weights
+```
+
+- With the following command, you can see estimated weights
+```bash
+GET estimated_weights
+```
+
 ‍
 
 
