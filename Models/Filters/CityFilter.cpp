@@ -12,9 +12,14 @@ CityFilter::~CityFilter() {}
 
 void CityFilter::filter(Database::l_hotels& hotels)
 {
-    for(auto hotel_itr = hotels.begin(); hotel_itr != hotels.end(); hotel_itr++)
+    if(activity != ConstNames::Active_Mode)
+        this->hotels = hotels;
+    else
     {
-        if((*hotel_itr)->get_city() == this->city)
-            this->hotels.push_back(*hotel_itr);
+        for(auto hotel_itr = hotels.begin(); hotel_itr != hotels.end(); hotel_itr++)
+        {
+            if((*hotel_itr)->get_city() == this->city)
+                this->hotels.push_back(*hotel_itr);
+        }
     }
 }

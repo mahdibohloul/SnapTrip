@@ -29,7 +29,7 @@ namespace ConstNames
     const int Minimum_Weights_Number = 1;
     const int Minimum_Hotel_Reserve = 1;
     const int Maximum_Hotel_Reserve = 30;
-    const int Iterations_Number = 10000;
+    const int Iterations_Number = 1000;
     const int Default_Filter_Coefficient = 2;
     const int Default_Exponent_Dirivative = 2;
     const int Default_Star = 0;

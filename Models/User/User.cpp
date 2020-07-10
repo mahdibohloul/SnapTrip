@@ -206,6 +206,11 @@ void Database::User::deactivate_default_filter()
     auto default_filter = filters.find(FilterMode::DefaultAvgPrice);
     if(default_filter != filters.end())
         ((*default_filter).second)->deactivate();
+    else
+    {
+        set_filters(FilterMode::DefaultAvgPrice);
+        deactivate_default_filter();
+    }
 }
 
 Database::l_hotels Database::User::get_filtered_hotels(Database::l_hotels& hotels, m_filter::iterator& map_itr)
@@ -358,20 +363,20 @@ bool Database::User::the_default_filter_applied()
 pair_floats Database::User::get_ratings_of_hotels(Hotel* h1, Hotel* h2)
 {
     if(manual_weights.activity)
-        return make_pair(h1->calculate_avg_weighted(manual_weights.weights), h2->calculate_avg_weighted(manual_weights.weights));
+        return make_pair(get_rating_of_hotel(h1, manual_weights), get_rating_of_hotel(h2, manual_weights));
+
     else if(ratings.size() < ConstNames::Minimum_Ratings_Number)
         throw Exception(ConstNames::Insufficient_Ratings_msg);
-    else if(already_rated(h1) && already_rated(h2))
-        return make_pair(get_overall_hotel_rating(h1), get_overall_hotel_rating(h2));
 
     auto weights = calculate_rating();
-    if(already_rated(h1) && !already_rated(h2))
-        return make_pair(get_overall_hotel_rating(h1), h2->calculate_avg_weighted(weights.weights));
+    return make_pair(get_rating_of_hotel(h1, weights), get_rating_of_hotel(h2, weights));
+}
 
-    else if(!already_rated(h1) && already_rated(h2))
-        return make_pair(h1->calculate_avg_weighted(weights.weights), get_overall_hotel_rating(h2));
-
-    return make_pair(h1->calculate_avg_weighted(weights.weights), h2->calculate_avg_weighted(weights.weights));
+float Database::User::get_rating_of_hotel(Hotel* hotel, Weights weights)
+{
+    if(already_rated(hotel))
+        return get_overall_hotel_rating(hotel);
+    return hotel->calculate_avg_weighted(weights.weights);
 }
 
 bool Database::User::already_rated(Hotel *hotel)
