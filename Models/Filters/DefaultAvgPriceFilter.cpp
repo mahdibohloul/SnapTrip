@@ -43,10 +43,15 @@ long double DefaultAvgPriceFilter::calculate_average_deviation(const Database::U
 
 void DefaultAvgPriceFilter::filter(Database::l_hotels& hotels)
 {
-    for(auto hotel : hotels)
+    if(activity != ConstNames::Active_Mode)
+        this->hotels = hotels;
+    else
     {
-        if(in_range(hotel->get_avg_price()))
-            this->hotels.push_back(hotel);
+        for(auto hotel : hotels)
+        {
+            if(in_range(hotel->get_avg_price()))
+                this->hotels.push_back(hotel);
+        }
     }
 }
 

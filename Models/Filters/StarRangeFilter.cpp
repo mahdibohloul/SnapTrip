@@ -12,10 +12,15 @@ StarRangeFilter::~StarRangeFilter() {}
 
 void StarRangeFilter::filter(Database::l_hotels& hotels)
 {
-    for(auto hotel_itr = hotels.begin(); hotel_itr != hotels.end(); hotel_itr++)
+    if(activity != ConstNames::Active_Mode)
+        this->hotels = hotels;
+    else
     {
-        if(in_range(*hotel_itr))
-            this->hotels.push_back(*hotel_itr);
+        for(auto hotel_itr = hotels.begin(); hotel_itr != hotels.end(); hotel_itr++)
+        {
+            if(in_range(*hotel_itr))
+                this->hotels.push_back(*hotel_itr);
+        }
     }
 }
 

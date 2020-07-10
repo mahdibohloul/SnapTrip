@@ -551,14 +551,14 @@ Database::Hotel::RatingInfo Backend::fill_rating_info(const data_t& data, const 
 {
     Database::Hotel::RatingInfo rating_info;
     string hotel_id = ConstNames::Dump_str_Number, location, cleanliness, staff, facilities, value_for_money, overall_rating = ConstNames::Dump_str_Number;
-    location = find_info(ConstNames::Location, data);
-    cleanliness = find_info(ConstNames::Cleanliness, data);
-    staff = find_info(ConstNames::Staff, data);
-    facilities = find_info(ConstNames::Facilities, data);
-    value_for_money = find_info(ConstNames::Value_For_Money, data);
+    location = find_info(ConstNames::Location, data) != ConstNames::Empty_Str ? find_info(ConstNames::Location, data) : throw Exception(ConstNames::Bad_Request_msg);
+    cleanliness = find_info(ConstNames::Cleanliness, data) != ConstNames::Empty_Str ? find_info(ConstNames::Cleanliness, data) : throw Exception(ConstNames::Bad_Request_msg);
+    staff = find_info(ConstNames::Staff, data) != ConstNames::Empty_Str ? find_info(ConstNames::Staff, data) : throw Exception(ConstNames::Bad_Request_msg);
+    facilities = find_info(ConstNames::Facilities, data) != ConstNames::Empty_Str ? find_info(ConstNames::Facilities, data) : throw Exception(ConstNames::Bad_Request_msg);
+    value_for_money = find_info(ConstNames::Value_For_Money, data) != ConstNames::Empty_Str ? find_info(ConstNames::Value_For_Money, data) : throw Exception(ConstNames::Bad_Request_msg);
     if(mode == ConstNames::Rating_Order){
-        hotel_id = find_info(ConstNames::Hotel, data);
-        overall_rating = find_info(ConstNames::Overall_Rating, data);
+        hotel_id = (find_info(ConstNames::Hotel, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Hotel, data) : throw Exception(ConstNames::Bad_Request_msg);
+        overall_rating = (find_info(ConstNames::Overall_Rating, data) != ConstNames::Empty_Str) ? find_info(ConstNames::Overall_Rating, data) : throw Exception(ConstNames::Bad_Request_msg);
     }
     if(valid_rating_info(hotel_id, location, cleanliness, staff, facilities, value_for_money, overall_rating))
     {
@@ -578,7 +578,7 @@ Database::Hotel::RatingInfo Backend::fill_rating_info(const data_t& data, const 
 Database::User::Weights Backend::fill_manual_weights_info(const data_t& data)
 {
     auto weights = Database::Hotel::RatingInfo();
-    auto activity_status = (find_info(ConstNames::Active, data) == ConstNames::True) ? ConstNames::Active_Mode : ConstNames::Inactive_Mode;
+    auto activity_status = (find_info(ConstNames::Active, data) == ConstNames::True) ? ConstNames::Active_Mode : (find_info(ConstNames::Active, data) == ConstNames::False) ?  ConstNames::Inactive_Mode : throw Exception(ConstNames::Bad_Request_msg);
     if(activity_status)
         weights = fill_rating_info(data, ConstNames::Manual_Weights_Order);
     return Database::User::Weights(weights, activity_status);

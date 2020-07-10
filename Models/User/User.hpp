@@ -135,6 +135,7 @@ private:
     void clean_reservations_up();
 
     pair_floats get_ratings_of_hotels(Hotel* h1, Hotel* h2);
+    float get_rating_of_hotel(Hotel* hotel, Weights weights);
 
     Weights calculate_rating();
     long double calculate_overall_rating(Weights weights);

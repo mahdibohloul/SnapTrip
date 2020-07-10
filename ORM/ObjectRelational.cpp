@@ -187,11 +187,16 @@ void ObjectRelational::post_manual_weights(Database::User::Weights &manual_weigh
 
 void ObjectRelational::get_rating(std::string hotel_id)
 {
-    auto hotel = database->query_in_hotels(hotel_id);
-    if(hotel == nullptr)
-        throw Exception(ConstNames::Not_Found_msg);
-    auto avg_ratings = hotel->get_avg_ratings();
-    responding(avg_ratings);
+    if(hotel_id != ConstNames::Empty_Str)
+    {
+        auto hotel = database->query_in_hotels(hotel_id);
+        if(hotel == nullptr)
+            throw Exception(ConstNames::Not_Found_msg);
+        auto avg_ratings = hotel->get_avg_ratings();
+        responding(avg_ratings);
+    }
+    else
+        throw Exception(ConstNames::Bad_Request_msg);
 }
 
 void ObjectRelational::get_manual_weights(Database::User *user)
